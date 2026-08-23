@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Battle UI</title>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: white;
+        }
+
+        .mainBorder {
+            background-color: gray;
+            width: 1000px;
+            height: 800px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            border-radius: 20px;
+            padding: 10px;
+        }
+
+        .upper {
+            display: flex;
+            width: 100%;
+            height: 500px;
+            position: relative;
+            background-image: url("img/bbg.png");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .upper p{
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 2px;
+        }
+
+        .pokemon1 {
+            height: 250px;
+            width: 250px;
+            /* background-color: red; */
+            position: absolute;
+            top:50%;
+            left:10%;
+        }
+        
+        .pokemon1 img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .pokemon1HP{
+            display: flex;
+            height: 100px;
+            width: 500px;
+            background-color: white;
+            position: absolute;
+            top:74%;
+            right:1%;
+            border-radius: 20px;
+            border: black 5px solid;
+            padding: 4px;
+            flex-direction: column;
+            justify-items: center;
+            justify-content: center;
+        }
+
+        .p1hp_bg{
+            width: 450px;
+            height: 10px;
+            background-color: black;
+            border: gray 5px solid;
+            border-radius: 20px;
+        }
+
+        .p1hp{
+            width: 100%;
+            height: 10px;
+            background-color: green;
+        }
+
+        .pokemon2 {
+            height: 250px;
+            width: 250px;
+            position:absolute;
+            top:10%;
+            right:10%;
+        }
+
+        .pokemon2 img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .pokemon2HP{
+            display: flex;
+            height: 100px;
+            width: 500px;
+            background-color: white;
+            position: absolute;
+            top:2%;
+            left:1%;
+            border-radius: 20px;
+            border: black 5px solid;
+            padding: 4px;
+            flex-direction: column;
+            justify-items: center;
+            justify-content: center;
+        }
+
+        .p2hp_bg{
+            width: 450px;
+            height: 10px;
+            background-color: black;
+            border: gray 5px solid;
+            border-radius: 20px;
+        }
+
+        .p2hp{
+            width: 100%;
+            height: 10px;
+            background-color: green;
+        }
+
+        .bottom {
+            display: flex;
+            width: 100%;
+            background-color:#282a2e ;
+            height: 300px;
+            padding: 0px;
+            border: 4px solid black;
+        }
+
+        .dialogueBorder {
+            background-color: #214f6b;
+            border: 5px solid #ceaa48;
+            color: white;
+            font-size: 5rem;
+            width: 50%;
+            height: 100%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+        }
+
+
+        .actionBorder {
+            /* background-color: black; */
+            width: 50%;
+            height: 300px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .FightActionBorder {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            padding: 15px;
+            box-sizing: border-box;
+            width: 50%;
+            height: 300px;
+            display:none;
+        }
+
+        button {
+            border: 8px solid black;
+            border-radius: 12px;
+            background-color: red;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+
+<body>
+   
+    <div class="mainBorder">
+        <div class="upper" >
+            <div class="pokemon1">
+                <img src="img/pikachu.png">
+            </div>
+            <div class="pokemon1HP">
+                    <p id="p1name">Pikachu</p>
+                    <div class="p1hp_bg">
+                        <div id="P1HP" class="p1hp"></div>
+                    </div>
+            </div>
+            <div class="pokemon2">
+                <img src="img/charizard1.png">
+            </div>
+             <div class="pokemon2HP">
+                <p id="p2name">Charizard</p>
+                    <div class="p2hp_bg">
+                        <div id="P2HP" class="p2hp"></div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom">
+
+            <div class="dialogueBorder" id="dialogue">
+                What will you do ?
+            </div>
+
+            <div class="actionBorder" id="actionPannel">
+                 <button onclick="fight()">
+                    Fight
+                </button>
+
+                <button onclick="pokemon()">
+                    Pokemon
+                </button>
+
+                <button onclick="item()">
+                    Item
+                </button>
+
+                <button onclick="run()">
+                    Run
+                </button>
+
+            </div>
+            <div class="FightActionBorder" id="fightActionPannel">
+                 <button onclick="attack1()">
+                    attack1
+                </button>
+
+                <button onclick="attack2()">
+                    attack1
+                </button>
+
+                <button onclick="attack3()">
+                    attack1
+                </button>
+
+                <button onclick="attack4()">
+                    attack1
+                </button>
+                <button onclick="back()">
+                    back
+                </button>
+                </div>
+
+        </div>
+
+    </div>
+
+</body>
+<script>
+
+    function fight(){
+        console.log("fight button was pressed");
+        document.getElementById("actionPannel").style.display="none";
+        document.getElementById("fightActionPannel").style.display="grid";
+    }
+
+    function back(){
+        let fight=document.getElementById("fightActionPannel").style.display;
+        if(fight==="grid"){
+            document.getElementById("fightActionPannel").style.display="none";
+            document.getElementById("actionPannel").style.display="grid";
+        }
+        
+    }
+    function run(){
+        document.getElementById("dialogue")="You can't run from a pokemon battle"
+    }
+    const text = document.getElementById("dialogue");
+
+
+</script>
+</html>
