@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic SEO -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pokémon Battle Simulator | Battle with Your Favorite Pokémon</title>
+
+    <meta name="description"
+        content="Battle your favorite Pokémon in an exciting Pokémon Battle Simulator. Choose your team, use unique moves, and become the ultimate trainer.">
+
+    <meta name="keywords"
+        content="Pokemon Battle Simulator, Pokemon Game, Battle Simulator, Pikachu, Charizard, Gengar, Greninja">
+
+    <meta name="author" content="Pokémon Battle Simulator">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Pokémon Battle Simulator">
+    <meta property="og:description" content="Battle Pokémon in a fun and responsive battle simulator.">
+    <meta property="og:image" content="images/hero-battle.webp">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" href="images/favicon.webp" type="image/webp">
+
+    <style>
+        /* ---------- RESET ---------- */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:#0F172A;
+    color:#F8FAFC;
+    line-height:1.6;
+}
+
+/* ---------- ACCESSIBILITY ---------- */
+
+.skip-link{
+    position:absolute;
+    left:-999px;
+    top:10px;
+    background:#FACC15;
+    color:#000;
+    padding:10px 18px;
+    border-radius:6px;
+}
+
+.skip-link:focus{
+    left:10px;
+}
+
+/* ---------- HEADER ---------- */
+
+.header{
+    position:sticky;
+    top:0;
+    background:#111827;
+    z-index:999;
+    border-bottom:1px solid #1F2937;
+}
+
+.navbar{
+    max-width:1200px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:1rem;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:white;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.logo img{
+    border-radius:50%;
+}
+
+.nav-links{
+    display:flex;
+    gap:1.5rem;
+    list-style:none;
+}
+
+.nav-links a{
+    color:#CBD5E1;
+    text-decoration:none;
+}
+
+.nav-links a:hover,
+.nav-links a:focus{
+    color:#FACC15;
+}
+
+/* ---------- HERO ---------- */
+
+.hero{
+    max-width:1200px;
+    margin:auto;
+    padding:4rem 1rem;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    align-items:center;
+    gap:2rem;
+}
+
+.hero h1{
+    font-size:clamp(2.3rem,6vw,4rem);
+    line-height:1.1;
+    margin-bottom:1rem;
+}
+
+.hero p{
+    color:#CBD5E1;
+    margin-bottom:2rem;
+}
+
+.hero img{
+    width:100%;
+    border-radius:20px;
+}
+
+/* ---------- BUTTON ---------- */
+
+.cta-btn{
+    display:inline-block;
+    background:#FACC15;
+    color:#111827;
+    padding:14px 28px;
+    border-radius:999px;
+    text-decoration:none;
+    font-weight:bold;
+    transition:.25s;
+}
+
+.cta-btn:hover,
+.cta-btn:focus{
+    transform:translateY(-3px);
+}
+
+.secondary{
+    background:#2563EB;
+    color:white;
+}
+
+/* ---------- FEATURES ---------- */
+
+.features{
+    background:#172033;
+    padding:4rem 1rem;
+}
+
+.features h2{
+    text-align:center;
+    margin-bottom:2rem;
+}
+
+.feature-grid{
+    max-width:1100px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:1.5rem;
+}
+
+.card{
+    background:#1E293B;
+    padding:1.5rem;
+    border-radius:16px;
+    border:1px solid #334155;
+}
+
+.card h3{
+    color:#FACC15;
+    margin-bottom:.75rem;
+}
+
+/* ---------- ABOUT ---------- */
+
+.about{
+    max-width:900px;
+    margin:auto;
+    padding:4rem 1rem;
+    text-align:center;
+}
+
+
+/* ---------- FOOTER ---------- */
+
+.footer{
+    padding:2rem 1rem;
+    background:#111827;
+    text-align:center;
+    border-top:1px solid #1F2937;
+}
+
+.footer nav{
+    margin-top:1rem;
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:1rem;
+}
+
+.footer a{
+    color:#CBD5E1;
+    text-decoration:none;
+}
+
+.footer a:hover,
+.footer a:focus{
+    color:#FACC15;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:768px){
+
+    .navbar{
+        flex-direction:column;
+        gap:1rem;
+    }
+
+    .nav-links{
+        gap:1rem;
+    }
+
+    .hero{
+        padding-top:2rem;
+        text-align:center;
+    }
+
+    .hero-image{
+        order:-1;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+    <!-- Skip Link -->
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar" aria-label="Main Navigation">
+            <a href="#" class="logo">
+                <img src="img/logo.webp"
+                    alt="Pokémon Battle Simulator logo"
+                    width="48"
+                    height="48">
+                <span>Pokémon Battle Simulator</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main -->
+    <main id="main-content">
+
+        <!-- Hero Section -->
+        <section class="hero">
+
+            <div class="hero-text">
+
+                <h1>Battle Your Favorite Pokémon.</h1>
+
+                <p>
+                    Choose your Pokémon, build your team, and experience strategic turn-based battles inspired by the Pokémon games.
+                </p>
+
+                <a href="test.html" class="cta-btn" aria-label="Start playing Pokémon Battle Simulator">
+                    Play Now
+                </a>
+
+            </div>
+
+            <div class="hero-image">
+                <img src="img/hero.webp"
+                    alt="Pikachu battling Charizard in a Pokémon arena"
+                    width="600"
+                    height="500">
+            </div>
+
+        </section>
+
+        <!-- Features -->
+        <section id="features" class="features">
+
+            <h2>Why You'll Love It</h2>
+
+            <div class="feature-grid">
+
+                <article class="card">
+                    <h3>Turn-Based Battles</h3>
+                    <p>Experience strategic Pokémon battles with authentic move selection and damage calculations.</p>
+                </article>
+
+                <article class="card">
+                    <h3>Build Your Team</h3>
+                    <p>Choose legendary favorites like Pikachu, Charizard, Gengar, Greninja, and more.</p>
+                </article>
+
+                <article class="card">
+                    <h3>Responsive Gameplay</h3>
+                    <p>Play comfortably on desktop, tablet, or mobile with an adaptive interface.</p>
+                </article>
+
+            </div>
+
+        </section>
+
+        <!-- About -->
+        <section id="about" class="about">
+
+            <h2>About the Simulator</h2>
+
+            <p>
+                Pokémon Battle Simulator is a fan-made project created for learning web development and game mechanics.
+                Battle AI opponents, test different Pokémon teams, and enjoy a clean modern interface.
+            </p>
+
+        </section>
+
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+
+        <p>&copy; 2026 Pokémon Battle Simulator.</p>
+
+        <nav aria-label="Footer Navigation">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Contact</a>
+        </nav>
+
+    </footer>
+
+</body>
+</html>
