@@ -154,11 +154,6 @@ body{
     transform:translateY(-3px);
 }
 
-.secondary{
-    background:#2563EB;
-    color:white;
-}
-
 /* ---------- FEATURES ---------- */
 
 .features{
@@ -200,6 +195,47 @@ body{
     text-align:center;
 }
 
+/* ---------- CTA SECTION ---------- */
+
+.cta-section{
+    padding:5rem 1rem;
+    background:#172033;
+    text-align:center;
+    border-top:1px solid #334155;
+    border-bottom:1px solid #334155;
+}
+
+.cta-content{
+    max-width:800px;
+    margin:auto;
+}
+
+.cta-content h2{
+    font-size:clamp(2rem,5vw,3rem);
+    line-height:1.2;
+    margin-bottom:1rem;
+    color:#F8FAFC;
+}
+
+.cta-content p{
+    max-width:650px;
+    margin:0 auto 2rem;
+    color:#CBD5E1;
+    font-size:1.1rem;
+}
+
+.cta-play{
+    background:#FACC15;
+    color:#111827;
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+}
+
+.cta-play:hover,
+.cta-play:focus{
+    background:#FDE047;
+    transform:translateY(-3px);
+    box-shadow:0 10px 22px rgba(0,0,0,.35);
+}
 
 /* ---------- FOOTER ---------- */
 
@@ -347,6 +383,25 @@ body{
 
     </main>
 
+    <!-- CTA Section -->
+<section class="cta-section" aria-labelledby="cta-title">
+
+    <div class="cta-content">
+
+        <h2 id="cta-title">Ready to Become the Ultimate Trainer?</h2>
+
+        <p>
+            Choose your Pokémon, build your dream team, and jump into an exciting battle.
+            Your next victory is just one click away!
+        </p>
+
+        <a href="test.html" class="cta-btn cta-play">
+            Start Your Battle
+        </a>
+
+    </div>
+
+</section>
     <!-- Footer -->
     <footer class="footer">
 
