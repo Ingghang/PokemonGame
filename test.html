@@ -6,14 +6,68 @@
     <title>Pokemon Battle UI</title>
 
     <style>
-        body {
+        body{
+            font-family:Arial, Helvetica, sans-serif;
+            background:#0F172A;
+            color:#F8FAFC;
+            line-height:1.6;
+        }
+        /* ---------- HEADER ---------- */
+
+        .header{
+            position:sticky;
+            top:0;
+            background:#111827;
+            z-index:999;
+            border-bottom:1px solid #1F2937;
+        }
+
+        .navbar{
+            max-width:1200px;
+            margin:auto;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:1rem;
+        }
+
+        .logo{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            color:white;
+            text-decoration:none;
+            font-weight:bold;
+        }
+
+        .logo img{
+            border-radius:50%;
+        }
+
+        .nav-links{
+            display:flex;
+            gap:1.5rem;
+            list-style:none;
+        }
+
+        .nav-links a{
+            color:#CBD5E1;
+            text-decoration:none;
+        }
+
+        .nav-links a:hover,
+        .nav-links a:focus{
+            color:#FACC15;
+        }
+
+        /* body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             background-color: white;
-        }
+        } */
 
         .mainBorder {
             background-color: gray;
@@ -207,7 +261,19 @@
 </head>
 
 <body>
-   
+       <!-- Header -->
+    <header class="header">
+        <nav class="navbar" aria-label="Main Navigation">
+            <a href="index.html" class="logo">
+                <img src="img/logo.webp"
+                    alt="Pokémon Battle Simulator logo"
+                    width="48"
+                    height="48">
+                <span>Pokémon Battle Simulator</span>
+            </a>
+        </nav>
+    </header>
+
     <div class="mainBorder">
         <div class="upper" >
             <div class="pokemon1">
