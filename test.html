@@ -144,7 +144,7 @@
             background-color: #214f6b;
             border: 5px solid #ceaa48;
             color: white;
-            font-size: 5rem;
+            font-size: 3rem;
             width: 50%;
             height: 100%;
             box-sizing: border-box;
@@ -156,7 +156,7 @@
 
 
         .actionBorder {
-            /* background-color: black; */
+           
             width: 50%;
             height: 300px;
             display: grid;
@@ -179,6 +179,17 @@
             display:none;
         }
 
+        .itemActionBorder {
+            display:none;
+            flex-direction: column;
+            width: 50%;
+            height: auto;
+        }
+
+        .itemActionBorder button {
+            margin: 20px;
+            padding: 20px;
+        }
         button {
             border: 8px solid black;
             border-radius: 12px;
@@ -200,7 +211,7 @@
     <div class="mainBorder">
         <div class="upper" >
             <div class="pokemon1">
-                <img src="img/pikachu.png">
+                <img src="img/pikachu.png" alt="sprite of pikachu">
             </div>
             <div class="pokemon1HP">
                     <p id="p1name">Pikachu</p>
@@ -209,7 +220,7 @@
                     </div>
             </div>
             <div class="pokemon2">
-                <img src="img/charizard1.png">
+                <img src="img/charizard1.png" alt="sprite of charizard">
             </div>
              <div class="pokemon2HP">
                 <p id="p2name">Charizard</p>
@@ -220,8 +231,8 @@
         </div>
         <div class="bottom">
 
-            <div class="dialogueBorder" id="dialogue">
-                What will you do ?
+            <div class="dialogueBorder" id="dialoguePannel">
+                <p id="dialogue">What will you do ?</p>
             </div>
 
             <div class="actionBorder" id="actionPannel">
@@ -244,7 +255,7 @@
             </div>
             <div class="FightActionBorder" id="fightActionPannel">
                  <button onclick="attack1()">
-                    attack1
+                    Volt Tackle
                 </button>
 
                 <button onclick="attack2()">
@@ -261,14 +272,115 @@
                 <button onclick="back()">
                     back
                 </button>
-                </div>
-
+            </div>
+            <div class="itemActionBorder" id="itemActionPannel">
+                <button onclick="potion()" id="potionText">Potion x2</button>
+                <button onclick="back()">
+                    back
+                </button>
+            </div>
         </div>
 
     </div>
 
 </body>
 <script>
+
+    let Pokemon= [  {
+      "id": 25,
+      "name": "Pikachu",
+      "types": ["Electric"],
+      "stats": {
+        "hp": 110,
+        "attack": 150,
+        "defense": 60,
+        "spAttack": 150,
+        "spDefense": 70,
+        "speed": 110
+      },
+      "moves": [
+        {
+          "name": "Fake Out",
+          "type": "Normal",
+          "category": "Physical",
+          "power": 40,
+          "accuracy": 100,
+          "pp": 10
+        },
+        {
+          "name": "Iron Tail",
+          "type": "Steel",
+          "category": "Physical",
+          "power": 100,
+          "accuracy": 75,
+          "pp": 15
+        },
+        {
+          "name": "Quick Attack",
+          "type": "Normal",
+          "category": "Physical",
+          "power": 40,
+          "accuracy": 100,
+          "pp": 30
+        },
+        {
+          "name": "Volt Tackle",
+          "type": "Electric",
+          "category": "Physical",
+          "power": 120,
+          "accuracy": 100,
+          "pp": 15
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Charizard",
+      "types": ["Fire", "Flying"],
+      "stats": {
+        "hp": 153,
+        "attack": 104,
+        "defense": 98,
+        "spAttack": 129,
+        "spDefense": 105,
+        "speed": 120
+      },
+      "moves": [
+        {
+          "name": "Flamethrower",
+          "type": "Fire",
+          "category": "Special",
+          "power": 90,
+          "accuracy": 100,
+          "pp": 15
+        },
+        {
+          "name": "Dragon Claw",
+          "type": "Dragon",
+          "category": "Physical",
+          "power": 80,
+          "accuracy": 100,
+          "pp": 15
+        },
+        {
+          "name": "Wing Attack",
+          "type": "Flying",
+          "category": "Physical",
+          "power": 60,
+          "accuracy": 100,
+          "pp": 35
+        },
+        {
+          "name": "Fire Blast",
+          "type": "Fire",
+          "category": "Special",
+          "power": 110,
+          "accuracy": 85,
+          "pp": 5
+        }
+      ]
+    }
+    ]
 
     function fight(){
         console.log("fight button was pressed");
@@ -278,17 +390,67 @@
 
     function back(){
         let fight=document.getElementById("fightActionPannel").style.display;
+        let item=document.getElementById("itemActionPannel").style.display
         if(fight==="grid"){
             document.getElementById("fightActionPannel").style.display="none";
-            document.getElementById("actionPannel").style.display="grid";
+        } else if (item==="flex"){
+         document.getElementById("itemActionPannel").style.display="none";
         }
-        
+        document.getElementById("actionPannel").style.display="grid";
+        document.getElementById("dialoguePannel").style.width="50%";
+        document.getElementById("dialogue").textContent="What will you do?"
     }
+    
+    function pokemon(){
+        document.getElementById("dialoguePannel").style.width="100%";
+        document.getElementById("actionPannel").style.display="none";
+        document.getElementById("dialogue").textContent="You don't have other pokemon";
+        setTimeout(back,2000);
+    }
+    function item(){
+        document.getElementById("itemActionPannel").style.display="flex";
+        document.getElementById("actionPannel").style.display="none";
+    }
+
+    //no of potions
+   let potionCount = 2;
+   
+    function potion() {
+        const maxHp = pikachu.stats.hp;
+        let value=document.getElementById("P1HP").style.width
+
+        let hp = (hpPercent / 100) * maxHp;
+        console.log(hpPercent,hp);
+        let finalHp = hp;
+        
+        if (potionCount > 0) {
+            finalHp += 30;
+
+            if (finalHp > maxHp) {
+                finalHp = maxHp;
+            }
+
+            potionCount--;
+
+            let tmp = (finalHp / maxHp) * 100;
+            let hpBar=tmp+"%";
+            console.log(tmp);
+            console.log(typeof hpBar);
+            document.getElementById("P1HP").style.width = hpBar;
+            document.getElementById("potionText").textContent="Potion x"+potionCount;
+        }
+
+        back();
+    }
+
+
+
     function run(){
-        document.getElementById("dialogue")="You can't run from a pokemon battle"
+        document.getElementById("dialogue").textContent="You can't run from a pokemon battle"
     }
     const text = document.getElementById("dialogue");
 
 
+    
 </script>
 </html>
