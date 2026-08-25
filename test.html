@@ -9,7 +9,6 @@
         body{
             font-family:Arial, Helvetica, sans-serif;
             background:#0F172A;
-            color:#F8FAFC;
             line-height:1.6;
         }
         /* ---------- HEADER ---------- */
@@ -340,7 +339,7 @@
                 </button>
             </div>
             <div class="itemActionBorder" id="itemActionPannel">
-                <button onclick="potion()" id="potionText">Potion x2</button>
+                <button onclick="potion()" id="potionText">Potion x3</button>
                 <button onclick="back()">
                     back
                 </button>
@@ -454,6 +453,12 @@
         document.getElementById("fightActionPannel").style.display="grid";
     }
 
+    const pikachu = Pokemon.find(p => p.name === "Pikachu");
+    const charizard = Pokemon.find(p => p.name === "Charizard");
+
+    let hp1=pikachu.stats.hp;
+    let hp2=charizard.stats.hp;
+
     function back(){
         let fight=document.getElementById("fightActionPannel").style.display;
         let item=document.getElementById("itemActionPannel").style.display
@@ -479,34 +484,34 @@
     }
 
     //no of potions
-   let potionCount = 2;
+   let potionCount = 3;
    
     function potion() {
         const maxHp = pikachu.stats.hp;
-        let value=document.getElementById("P1HP").style.width
-
-        let hp = (hpPercent / 100) * maxHp;
-        console.log(hpPercent,hp);
-        let finalHp = hp;
         
         if (potionCount > 0) {
-            finalHp += 30;
+            hp1 += 30;
 
-            if (finalHp > maxHp) {
-                finalHp = maxHp;
+            if (hp1 > maxHp) {
+                hp1 = maxHp;
             }
 
             potionCount--;
 
-            let tmp = (finalHp / maxHp) * 100;
+            let tmp = (hp1 / maxHp) * 100;
             let hpBar=tmp+"%";
             console.log(tmp);
             console.log(typeof hpBar);
             document.getElementById("P1HP").style.width = hpBar;
             document.getElementById("potionText").textContent="Potion x"+potionCount;
+            back();
+        }else{
+            document.getElementById("itemActionPannel").style.display="none"
+            document.getElementById("dialoguePannel").style.width="100%";
+            document.getElementById("dialogue").textContent="You don't have potion left";
+            setTimeout(back,1500);
         }
 
-        back();
     }
 
 
