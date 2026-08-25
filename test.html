@@ -471,6 +471,8 @@
         let defense=charizard.stats.defense;
         let spDefense=charizard.stats.spDefense;
         let maxHp=charizard.stats.hp;
+        let p1Speed=pikachu.stats.speed;
+        let p2Speed=charizard.stats.speed;
         let dmg=0;
         let stab=false;
         let crit=false; 
@@ -483,29 +485,87 @@
             stab=true;
         }
         if (attackType=="Physical"){
-            dmg=getDmg(basePower,attack,defense);
+            dmg=getDmg(basePower,attack,defense,stab,crit);
         } else {
-            dmg=getDmg(basePower,spAttack,spDefense);
+            dmg=getDmg(basePower,spAttack,spDefense,stab,crit);
         }
+
         
         console.log(dmg)
+        if(p1Speed>p2Speed){
         hp2-=dmg;
         if (hp2<0){
             hp2=0;
-          
         }
-        
+        setTimeout(()=>{
         document.getElementById("P2HP").style.width=(hp2/maxHp)*100+"%";
         document.getElementById("dialoguePannel").style.width="100%";
         document.getElementById("actionPannel").style.display="none";
         document.getElementById("fightActionPannel").style.display="none";
         document.getElementById("dialogue").textContent="Pikachu did a volt tackle";
+        },0)
         if(crit==true){
             setTimeout(Crit,1000);
         }
-        setTimeout(oppdmg,500);
-        setTimeout(back,2000);
-        
+        if(hp2<=0){
+            return;
+        }
+            let values=oppdmg();
+            hp1=values[0]
+            let c=values[1]
+            console.log(values)
+            setTimeout(()=>{
+            document.getElementById("P1HP").style.width=(hp1/maxHp)*100+"%";
+            document.getElementById("dialoguePannel").style.width="100%";
+            document.getElementById("actionPannel").style.display="none";
+            document.getElementById("fightActionPannel").style.display="none";
+            document.getElementById("dialogue").textContent="Charizad did a "+ values[2];
+            },2000);
+            if(values[1]==true){
+               setTimeout(() => {
+                document.getElementById("dialogue").textContent =
+                "It was a critical hit!";
+             }, 2500);
+            }
+            setTimeout(back,3000);
+
+        }else{
+            let values=oppdmg();
+            hp1=values[0]
+            let c=values[1]
+            console.log(values)
+            setTimeout(()=>{
+            document.getElementById("P1HP").style.width=(hp1/maxHp)*100+"%";
+            document.getElementById("dialoguePannel").style.width="100%";
+            document.getElementById("actionPannel").style.display="none";
+            document.getElementById("fightActionPannel").style.display="none";
+            document.getElementById("dialogue").textContent="Charizad did a "+ values[2];
+            },0);
+            if(values[1]==true){
+               setTimeout(() => {
+                document.getElementById("dialogue").textContent =
+                "It was a critical hit!";
+             }, 1500);
+            }
+
+            setTimeout(()=>{
+            if(hp1<=0){
+                return
+            }
+            hp2-=dmg;
+            
+            if (hp2<0){
+                hp2=0;
+            }
+            
+            document.getElementById("P2HP").style.width=(hp2/maxHp)*100+"%";
+            document.getElementById("dialoguePannel").style.width="100%";
+            document.getElementById("actionPannel").style.display="none";
+            document.getElementById("fightActionPannel").style.display="none";
+            document.getElementById("dialogue").textContent="Pikachu did a volt tackle";
+        },2000)
+            setTimeout(back,3000);
+        }
     }
 
     function Crit(){
@@ -514,78 +574,70 @@
 
     function oppdmg(){
     
-    if (hp2==0){
-        return
-    }
-    let charizardMove = charizard.moves[
-        Math.floor(Math.random() * Pokemon[1].moves.length)
-    ];
+        if (hp2==0){
+            return
+        }
+        let charizardMove = charizard.moves[
+            Math.floor(Math.random() * Pokemon[1].moves.length)
+        ];
 
-    console.log("Charizard used " + charizardMove.name);
+        console.log("Charizard used " + charizardMove.name);
 
-    let basePower = charizardMove.power;
-    let attackType = charizardMove.category;
+        let basePower = charizardMove.power;
+        let attackType = charizardMove.category;
 
-    let attack = charizard.stats.attack;
-    let spAttack = charizard.stats.spAttack;
-    
-    let maxHp= pikachu.stats.hp;
-    let defense = pikachu.stats.defense;
-    let spDefense = pikachu.stats.spDefense;
+        let attack = charizard.stats.attack;
+        let spAttack = charizard.stats.spAttack;
+        
+        let maxHp= pikachu.stats.hp;
+        let defense = pikachu.stats.defense;
+        let spDefense = pikachu.stats.spDefense;
 
-    let stab = false;
-    let crit = false;
+        let stab = false;
+        let crit = false;
 
-    let prob = Math.floor(Math.random() * 3);
+        let prob = Math.floor(Math.random() * 3);
 
-    if (prob == 0) {
-        crit = true;
-    }
-
-   
-    if (charizard.types.includes(charizardMove.type)) {
-        stab = true;
-    }
-
-    
-    let dmg = 0;
-
-    if (attackType == "Physical") {
-        dmg = getDmg(
-            basePower,
-            attack,
-            defense,
-            stab,
-            crit
-        );
-    } else {
-        dmg = getDmg(
-            basePower,
-            spAttack,
-            spDefense,
-            stab,
-            crit
-        );
-    }
-
-    console.log("Damage:", dmg);
-
-    hp1 -= dmg;
-
-    if (hp1 < 0) {
-        hp1 = 0;
-    }
-
-        document.getElementById("P1HP").style.width=(hp1/maxHp)*100+"%";
-        document.getElementById("dialoguePannel").style.width="100%";
-        document.getElementById("actionPannel").style.display="none";
-        document.getElementById("fightActionPannel").style.display="none";
-        document.getElementById("dialogue").textContent="Charizad did a "+ charizardMove.name;
-        if(crit==true){
-            setTimeout(Crit,1000);
+        if (prob == 0) {
+            crit = true;
         }
 
-    console.log("Pikachu HP:", hp1);
+    
+        if (charizard.types.includes(charizardMove.type)) {
+            stab = true;
+        }
+
+        
+        let dmg = 0;
+
+        if (attackType == "Physical") {
+            dmg = getDmg(
+                basePower,
+                attack,
+                defense,
+                stab,
+                crit
+            );
+        } else {
+            dmg = getDmg(
+                basePower,
+                spAttack,
+                spDefense,
+                stab,
+                crit
+            );
+        }
+
+        console.log("Damage:", dmg);
+
+        hp1 -= dmg;
+
+        if (hp1 < 0) {
+            hp1 = 0;
+        }
+        console.log("Pikachu HP:", hp1);
+        return [hp1,crit,charizardMove.name];
+
     }
 
     function getDmg(basePower,attack,defense,stab,crit){
