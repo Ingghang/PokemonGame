@@ -10,7 +10,7 @@
         body{
             font-family:Arial, Helvetica, sans-serif;
             background:#0F172A;
-            color:black;
+            color: black;
             line-height:1.6;
         }
         /* ---------- HEADER ---------- */
@@ -258,6 +258,17 @@
         button:hover {
             background-color: darkred;
         }
+
+        .footer{
+            color:#F8FAFC;
+        }
+        .screen { 
+            display: block;
+            width: 100%;
+            max-width: 1000px; 
+        }
+
+         .screen.active { display: block; }
     </style>
 </head>
 
@@ -275,82 +286,52 @@
         </nav>
     </header>
     <audio src="img/battleOST.mp3" autoplay loop></audio>
-    <div class="battleBody">
-    <div class="mainBorder">
-        <div class="upper" >
-            <div class="pokemon1">
-                <img src="img/pikachu.png" alt="sprite of pikachu">
-            </div>
-            <div class="pokemon1HP">
-                    <p id="p1name">Pikachu</p>
-                    <div class="p1hp_bg">
-                        <div id="P1HP" class="p1hp"></div>
-                    </div>
-            </div>
-            <div class="pokemon2">
-                <img src="img/charizard1.png" alt="sprite of charizard">
-            </div>
-             <div class="pokemon2HP">
-                <p id="p2name">Charizard</p>
-                    <div class="p2hp_bg">
-                        <div id="P2HP" class="p2hp"></div>
-                </div>
-            </div>
-        </div>
-        <div class="bottom">
+  <section id="battleScreen" class="screen" aria-label="Battle">
+  <div class="mainBorder">
+    <div class="upper">
+      <div class="pokemonSlot pokemon1">
+        <img id="p1Sprite" src="" alt="">
+      </div>
+      <div class="hpCard pokemon1HP">
+        <p class="nameRow"><span id="p1Name"></span><span id="p1Level">Lv 50</span></p>
+        <div class="hpBarBg"><div id="p1HpFill" class="hpBarFill"></div></div>
+        <span id="p1HpText" class="hpText"></span>
+      </div>
 
-            <div class="dialogueBorder" id="dialoguePannel">
-                <p id="dialogue">What will you do ?</p>
-            </div>
-
-            <div class="actionBorder" id="actionPannel">
-                 <button onclick="fight()">
-                    Fight
-                </button>
-
-                <button onclick="pokemon()">
-                    Pokemon
-                </button>
-
-                <button onclick="item()">
-                    Item
-                </button>
-
-                <button onclick="run()">
-                    Run
-                </button>
-
-            </div>
-            <div class="FightActionBorder" id="fightActionPannel">
-                 <button onclick="attack1()">
-                    Volt Tackle
-                </button>
-
-                <button onclick="attack2()">
-                    attack1
-                </button>
-
-                <button onclick="attack3()">
-                    attack1
-                </button>
-
-                <button onclick="attack4()">
-                    attack1
-                </button>
-                <button onclick="back()">
-                    back
-                </button>
-            </div>
-            <div class="itemActionBorder" id="itemActionPannel">
-                <button onclick="potion()" id="potionText">Potion x3</button>
-                <button onclick="back()">
-                    back
-                </button>
-            </div>
-        </div>
-
+      <div class="pokemonSlot pokemon2">
+        <img id="p2Sprite" src="" alt="">
+      </div>
+      <div class="hpCard pokemon2HP">
+        <p class="nameRow"><span id="p2Name"></span><span id="p2Level">Lv 50</span></p>
+        <div class="hpBarBg"><div id="p2HpFill" class="hpBarFill"></div></div>
+        <span id="p2HpText" class="hpText"></span>
+      </div>
     </div>
+
+    <div class="bottom">
+      <div class="dialogueBorder" id="dialoguePanel">
+        <p id="dialogue" aria-live="polite">What will you do?</p>
+      </div>
+
+      <div class="panel visible" id="actionPanel">
+        <button class="actionBtn" id="btnFight">Fight</button>
+        <button class="actionBtn" id="btnPokemon">Pokémon</button>
+        <button class="actionBtn" id="btnItem">Item</button>
+        <button class="actionBtn" id="btnRun">Run</button>
+      </div>
+
+      <div class="panel" id="fightPanel"></div>
+
+      <div class="panel list" id="pokemonPanel"></div>
+
+      <div class="panel list" id="itemPanel">
+        <button class="actionBtn" id="btnPotion">Potion x2</button>
+        <button class="actionBtn" id="btnItemBack">Back</button>
+      </div>
     </div>
+  </div>
+</section>
+
         <!-- Footer -->
     <footer class="footer">
 
