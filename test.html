@@ -7,6 +7,16 @@
     <link rel="icon" href="img/logo.webp" type="image/webp">
     <link rel="stylesheet" href="style.css" >
     <style>
+        :root {
+            --panel-bg: #282a2e;
+            --dialogue-bg: #214f6b;
+            --dialogue-border: #ceaa48;
+            --hp-green: #4caf50;
+            --hp-yellow: #f6c343;
+            --hp-red: #e53935;
+            --btn-red: #d64545;
+            --btn-red-dark: #a83232;
+        }
         body{
             font-family:Arial, Helvetica, sans-serif;
             background:#0F172A;
@@ -72,179 +82,125 @@
 
         .mainBorder {
             background-color: gray;
-            width: 1000px;
-            height: 800px;
+            width: 100%;
+            aspect-ratio: 5 / 4;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
             border-radius: 20px;
             padding: 10px;
+            overflow: hidden;
         }
+
 
         .upper {
+            flex: 1 1 auto;
             display: flex;
             width: 100%;
-            height: 500px;
             position: relative;
-            background-image: url("img/bbg.png");
+            background: url("img/bbg.png");
+            background-repeat: no-repeat;
             background-size: cover;
-            background-position: center;
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 0;
         }
 
-        .upper p{
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 2px;
-        }
-
-        .pokemon1 {
-            height: 250px;
-            width: 250px;
-            /* background-color: red; */
-            position: absolute;
-            top:50%;
-            left:10%;
-        }
-        
-        .pokemon1 img {
+       .pokemonSlot img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            filter: drop-shadow(0 6px 4px rgba(0,0,0,0.25));
         }
-        
-        .pokemon1HP{
+
+        .pokemon1 { top: 50%; left: 0%; }
+        .pokemon2 { top: 5%; right: 0%; }
+
+        .hpCard {
             display: flex;
-            height: 100px;
-            width: 500px;
+            flex-direction: column;
+            gap: 4px;
             background-color: white;
             position: absolute;
-            top:74%;
-            right:1%;
-            border-radius: 20px;
-            border: black 5px solid;
-            padding: 4px;
-            flex-direction: column;
-            justify-items: center;
-            justify-content: center;
+            width: min(58%, 320px);
+            border-radius: 14px;
+            border: black 4px solid;
+            padding: 8px 12px;
         }
+        .hpCard p.nameRow { margin: 0; font-size: 1.1rem; font-weight: 700; display: flex; justify-content: space-between; }
+        .hpCard .hpText { font-size: 0.75rem; font-weight: normal; color: #444; }
 
-        .p1hp_bg{
-            width: 450px;
-            height: 10px;
-            background-color: black;
-            border: gray 5px solid;
-            border-radius: 20px;
-        }
+        .pokemon1HP { bottom: 6%; right: 2%; }
+        .pokemon2HP { top: 4%; left: 2%; }
 
-        .p1hp{
+        .hpBarBg {
             width: 100%;
-            height: 10px;
-            background-color: green;
+            height: 12px;
+            background-color: #222;
+            border: gray 3px solid;
+            border-radius: 20px;
+            overflow: hidden;
         }
-
-        .pokemon2 {
-            height: 250px;
-            width: 250px;
-            position:absolute;
-            top:10%;
-            right:10%;
-        }
-
-        .pokemon2 img {
-            width: 100%;
+        .hpBarFill {
             height: 100%;
-            object-fit: contain;
-        }
-
-        .pokemon2HP{
-            display: flex;
-            height: 100px;
-            width: 500px;
-            background-color: white;
-            position: absolute;
-            top:2%;
-            left:1%;
-            border-radius: 20px;
-            border: black 5px solid;
-            padding: 4px;
-            flex-direction: column;
-            justify-items: center;
-            justify-content: center;
-        }
-
-        .p2hp_bg{
-            width: 450px;
-            height: 10px;
-            background-color: black;
-            border: gray 5px solid;
-            border-radius: 20px;
-        }
-
-        .p2hp{
-            width: 100%;
-            height: 10px;
-            background-color: green;
+            background-color: var(--hp-green);
+            transition: width 0.4s ease, background-color 0.4s ease;
         }
 
         .bottom {
             display: flex;
             width: 100%;
-            background-color:#282a2e ;
-            height: 300px;
-            padding: 0px;
+            background-color: var(--panel-bg);
+            height: 34%;
+            min-height: 150px;
             border: 4px solid black;
+            border-radius: 0 0 10px 10px;
+            margin-top: 8px;
         }
 
         .dialogueBorder {
-            background-color: #214f6b;
-            border: 5px solid #ceaa48;
+            background-color: var(--dialogue-bg);
+            border: 5px solid var(--dialogue-border);
             color: white;
-            font-size: 3rem;
+            font-size: clamp(1rem, 2.4vw, 1.6rem);
             width: 50%;
-            height: 100%;
             box-sizing: border-box;
             display: flex;
             justify-content: center;
             align-items: center;
-            
+            padding: 10px;
+            text-align: center;
+            transition: width 0.2s ease;
         }
 
-
-        .actionBorder {
-           
+        .panel {
             width: 50%;
-            height: 300px;
-            display: grid;
+            height: 100%;
+            display: none;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
-            gap: 10px;
-            padding: 15px;
+            gap: 8px;
+            padding: 10px;
             box-sizing: border-box;
+            overflow-y: auto;
         }
+        .panel.visible { display: grid; }
+        .panel.list { display: none; grid-template-columns: 1fr 1fr; }
+        .panel.list.visible { display: grid; }
 
-        .FightActionBorder {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 10px;
-            padding: 15px;
-            box-sizing: border-box;
-            width: 50%;
-            height: 300px;
-            display:none;
+        button.actionBtn {
+            border: 5px solid black;
+            border-radius: 10px;
+            background-color: var(--btn-red);
+            color: white;
+            font-size: clamp(0.85rem, 2vw, 1.3rem);
+            font-weight: bold;
         }
+        button.actionBtn:hover:not(:disabled) { background-color: var(--btn-red-dark); }
+        button.actionBtn:disabled { background-color: #6b6b6b; cursor: not-allowed; opacity: 0.6; }
 
-        .itemActionBorder {
-            display:none;
-            flex-direction: column;
-            width: 50%;
-            height: auto;
-        }
+        .moveBtn { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; }
+        .moveBtn .moveMeta { font-size: 0.65rem; font-weight: normal; opacity: 0.85; }
 
-        .itemActionBorder button {
-            margin: 20px;
-            padding: 20px;
-        }
         button {
             border: 8px solid black;
             border-radius: 12px;
@@ -286,7 +242,8 @@
         </nav>
     </header>
     <audio src="img/battleOST.mp3" autoplay loop></audio>
-  <section id="battleScreen" class="screen" aria-label="Battle">
+  
+<section id="battleScreen" class="screen" aria-label="Battle">
   <div class="mainBorder">
     <div class="upper">
       <div class="pokemonSlot pokemon1">
@@ -347,15 +304,40 @@
 </body>
 <script>
 
-    let Pokemon= [  {
+const POKEMON_TEMPLATES =  [
+    {
+      "id": 129,
+      "name": "Magikarp",
+      "types": ["Water"],
+      "stats": {
+        "hp": 95,
+        "attack": 30,
+        "defense": 75,
+        "spAttack": 25,
+        "spDefense": 40,
+        "speed": 85
+      },
+      "moves": [
+        {
+          "name": "Splash",
+          "type": "Normal",
+          "category": "Status",
+          "power": 0,
+          "accuracy": 100,
+          "pp": 40,
+          "priority": 0
+        }
+      ]
+    },
+    {
       "id": 25,
       "name": "Pikachu",
       "types": ["Electric"],
       "stats": {
         "hp": 110,
-        "attack": 150,
+        "attack": 75,
         "defense": 60,
-        "spAttack": 150,
+        "spAttack": 70,
         "spDefense": 70,
         "speed": 110
       },
@@ -366,7 +348,8 @@
           "category": "Physical",
           "power": 40,
           "accuracy": 100,
-          "pp": 10
+          "pp": 10,
+          "priority": 3
         },
         {
           "name": "Iron Tail",
@@ -374,7 +357,8 @@
           "category": "Physical",
           "power": 100,
           "accuracy": 75,
-          "pp": 15
+          "pp": 15,
+          "priority": 0
         },
         {
           "name": "Quick Attack",
@@ -382,7 +366,8 @@
           "category": "Physical",
           "power": 40,
           "accuracy": 100,
-          "pp": 30
+          "pp": 30,
+          "priority": 1
         },
         {
           "name": "Volt Tackle",
@@ -390,7 +375,8 @@
           "category": "Physical",
           "power": 120,
           "accuracy": 100,
-          "pp": 15
+          "pp": 15,
+          "priority": 0
         }
       ]
     },
@@ -413,7 +399,8 @@
           "category": "Special",
           "power": 90,
           "accuracy": 100,
-          "pp": 15
+          "pp": 15,
+          "priority": 0
         },
         {
           "name": "Dragon Claw",
@@ -421,7 +408,8 @@
           "category": "Physical",
           "power": 80,
           "accuracy": 100,
-          "pp": 15
+          "pp": 15,
+          "priority": 0
         },
         {
           "name": "Wing Attack",
@@ -429,7 +417,8 @@
           "category": "Physical",
           "power": 60,
           "accuracy": 100,
-          "pp": 35
+          "pp": 35,
+          "priority": 0
         },
         {
           "name": "Fire Blast",
@@ -437,278 +426,442 @@
           "category": "Special",
           "power": 110,
           "accuracy": 85,
-          "pp": 5
+          "pp": 5,
+          "priority": 0
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "name": "Gengar",
+      "types": ["Ghost", "Poison"],
+      "stats": {
+        "hp": 135,
+        "attack": 85,
+        "defense": 80,
+        "spAttack": 150,
+        "spDefense": 95,
+        "speed": 130
+      },
+      "moves": [
+        {
+          "name": "Shadow Ball",
+          "type": "Ghost",
+          "category": "Special",
+          "power": 80,
+          "accuracy": 100,
+          "pp": 15,
+          "priority": 0
+        },
+        {
+          "name": "Sludge Wave",
+          "type": "Poison",
+          "category": "Special",
+          "power": 95,
+          "accuracy": 100,
+          "pp": 10,
+          "priority": 0
+        },
+        {
+          "name": "Nasty Plot",
+          "type": "Dark",
+          "category": "Status",
+          "power": 0,
+          "accuracy": 100,
+          "pp": 20,
+          "priority": 0
+        },
+        {
+          "name": "Dazzling Gleam",
+          "type": "Fairy",
+          "category": "Special",
+          "power": 80,
+          "accuracy": 100,
+          "pp": 10,
+          "priority": 0
+        }
+      ]
+    },
+    {
+      "id": 658,
+      "name": "Greninja",
+      "types": ["Water", "Dark"],
+      "stats": {
+        "hp": 147,
+        "attack": 115,
+        "defense": 87,
+        "spAttack": 123,
+        "spDefense": 91,
+        "speed": 139
+      },
+      "moves": [
+        {
+          "name": "Surf",
+          "type": "Water",
+          "category": "Special",
+          "power": 90,
+          "accuracy": 100,
+          "pp": 15,
+          "priority": 0
+        },
+        {
+          "name": "Ice Beam",
+          "type": "Ice",
+          "category": "Special",
+          "power": 90,
+          "accuracy": 100,
+          "pp": 10,
+          "priority": 0
+        },
+        {
+          "name": "Dark Pulse",
+          "type": "Dark",
+          "category": "Special",
+          "power": 80,
+          "accuracy": 100,
+          "pp": 15,
+          "priority": 0
+        },
+        {
+          "name": "Cut",
+          "type": "Normal",
+          "category": "Physical",
+          "power": 50,
+          "accuracy": 95,
+          "pp": 30,
+          "priority": 0
+        }
+      ]
+    },
+    {
+      "id": 448,
+      "name": "Lucario",
+      "types": ["Fighting", "Steel"],
+      "stats": {
+        "hp": 145,
+        "attack": 130,
+        "defense": 90,
+        "spAttack": 135,
+        "spDefense": 90,
+        "speed": 112
+      },
+      "moves": [
+        {
+          "name": "Swords Dance",
+          "type": "Normal",
+          "category": "Status",
+          "power": 0,
+          "accuracy": 100,
+          "pp": 20,
+          "priority": 0
+        },
+        {
+          "name": "Close Combat",
+          "type": "Fighting",
+          "category": "Physical",
+          "power": 120,
+          "accuracy": 100,
+          "pp": 5,
+          "priority": 0
+        },
+        {
+          "name": "Meteor Mash",
+          "type": "Steel",
+          "category": "Physical",
+          "power": 90,
+          "accuracy": 90,
+          "pp": 10,
+          "priority": 0
+        },
+        {
+          "name": "Extreme Speed",
+          "type": "Normal",
+          "category": "Physical",
+          "power": 80,
+          "accuracy": 100,
+          "pp": 5,
+          "priority": 2
         }
       ]
     }
-    ]
+  ];
 
-    function fight(){
-        console.log("fight button was pressed");
-        document.getElementById("actionPannel").style.display="none";
-        document.getElementById("fightActionPannel").style.display="grid";
-    }
+const TYPE_COLORS = {
+  Normal: "#A8A878", Fire: "#F08030", Water: "#6890F0", Electric: "#F8D030",
+  Grass: "#78C850", Ice: "#98D8D8", Fighting: "#C03028", Poison: "#A040A0",
+  Ground: "#E0C068", Flying: "#A890F0", Psychic: "#F85888", Bug: "#A8B820",
+  Rock: "#B8A038", Ghost: "#705898", Dragon: "#7038F8", Dark: "#705848",
+  Steel: "#B8B8D0", Fairy: "#EE99AC"
+};
 
-    const pikachu = Pokemon.find(p => p.name === "Pikachu");
-    const charizard = Pokemon.find(p => p.name === "Charizard");
 
-    let hp1=pikachu.stats.hp;
-    let hp2=charizard.stats.hp;
 
-    function attack1(){
-        if (hp1==0){
-            return;
-        }
-        let voltTackle = Pokemon[0].moves.find(move => move.name === "Volt Tackle");
-        let basePower=voltTackle.power;
-        let attackType=voltTackle.category;
-        let attack=pikachu.stats.attack;
-        let spAttack=pikachu.stats.spAttack;
-        let defense=charizard.stats.defense;
-        let spDefense=charizard.stats.spDefense;
-        let maxHp=charizard.stats.hp;
-        let p1Speed=pikachu.stats.speed;
-        let p2Speed=charizard.stats.speed;
-        let dmg=0;
-        let stab=false;
-        let crit=false; 
-        let prob=Math.floor(Math.random()*3);
-        console.log(prob)
-        if(prob==0){
-            crit=true;
-        }
-        if (pikachu.types.includes(voltTackle.type)){
-            stab=true;
-        }
-        if (attackType=="Physical"){
-            dmg=getDmg(basePower,attack,defense,stab,crit);
-        } else {
-            dmg=getDmg(basePower,spAttack,spDefense,stab,crit);
-        }
+//     function fight(){
+//         console.log("fight button was pressed");
+//         document.getElementById("actionPannel").style.display="none";
+//         document.getElementById("fightActionPannel").style.display="grid";
+//     }
+
+//     const pikachu = Pokemon.find(p => p.name === "Pikachu");
+//     const charizard = Pokemon.find(p => p.name === "Charizard");
+
+//     let hp1=pikachu.stats.hp;
+//     let hp2=charizard.stats.hp;
+
+//     function attack1(){
+//         if (hp1==0){
+//             return;
+//         }
+//         let voltTackle = Pokemon[0].moves.find(move => move.name === "Volt Tackle");
+//         let basePower=voltTackle.power;
+//         let attackType=voltTackle.category;
+//         let attack=pikachu.stats.attack;
+//         let spAttack=pikachu.stats.spAttack;
+//         let defense=charizard.stats.defense;
+//         let spDefense=charizard.stats.spDefense;
+//         let maxHp=charizard.stats.hp;
+//         let p1Speed=pikachu.stats.speed;
+//         let p2Speed=charizard.stats.speed;
+//         let dmg=0;
+//         let stab=false;
+//         let crit=false; 
+//         let prob=Math.floor(Math.random()*3);
+//         console.log(prob)
+//         if(prob==0){
+//             crit=true;
+//         }
+//         if (pikachu.types.includes(voltTackle.type)){
+//             stab=true;
+//         }
+//         if (attackType=="Physical"){
+//             dmg=getDmg(basePower,attack,defense,stab,crit);
+//         } else {
+//             dmg=getDmg(basePower,spAttack,spDefense,stab,crit);
+//         }
 
         
-        console.log(dmg)
-        if(p1Speed>p2Speed){
-        hp2-=dmg;
-        if (hp2<0){
-            hp2=0;
-        }
-        setTimeout(()=>{
-        document.getElementById("P2HP").style.width=(hp2/maxHp)*100+"%";
-        document.getElementById("dialoguePannel").style.width="100%";
-        document.getElementById("actionPannel").style.display="none";
-        document.getElementById("fightActionPannel").style.display="none";
-        document.getElementById("dialogue").textContent="Pikachu did a volt tackle";
-        },0)
-        if(crit==true){
-            setTimeout(Crit,1000);
-        }
-        if(hp2<=0){
-            return;
-        }
-            let values=oppdmg();
-            hp1=values[0]
-            let c=values[1]
-            console.log(values)
-            setTimeout(()=>{
-            document.getElementById("P1HP").style.width=(hp1/maxHp)*100+"%";
-            document.getElementById("dialoguePannel").style.width="100%";
-            document.getElementById("actionPannel").style.display="none";
-            document.getElementById("fightActionPannel").style.display="none";
-            document.getElementById("dialogue").textContent="Charizad did a "+ values[2];
-            },2000);
-            if(values[1]==true){
-               setTimeout(() => {
-                document.getElementById("dialogue").textContent =
-                "It was a critical hit!";
-             }, 2500);
-            }
-            setTimeout(back,3000);
+//         console.log(dmg)
+//         if(p1Speed>p2Speed){
+//         hp2-=dmg;
+//         if (hp2<0){
+//             hp2=0;
+//         }
+//         setTimeout(()=>{
+//         document.getElementById("P2HP").style.width=(hp2/maxHp)*100+"%";
+//         document.getElementById("dialoguePannel").style.width="100%";
+//         document.getElementById("actionPannel").style.display="none";
+//         document.getElementById("fightActionPannel").style.display="none";
+//         document.getElementById("dialogue").textContent="Pikachu did a volt tackle";
+//         },0)
+//         if(crit==true){
+//             setTimeout(Crit,1000);
+//         }
+//         if(hp2<=0){
+//             return;
+//         }
+//             let values=oppdmg();
+//             hp1=values[0]
+//             let c=values[1]
+//             console.log(values)
+//             setTimeout(()=>{
+//             document.getElementById("P1HP").style.width=(hp1/maxHp)*100+"%";
+//             document.getElementById("dialoguePannel").style.width="100%";
+//             document.getElementById("actionPannel").style.display="none";
+//             document.getElementById("fightActionPannel").style.display="none";
+//             document.getElementById("dialogue").textContent="Charizad did a "+ values[2];
+//             },2000);
+//             if(values[1]==true){
+//                setTimeout(() => {
+//                 document.getElementById("dialogue").textContent =
+//                 "It was a critical hit!";
+//              }, 2500);
+//             }
+//             setTimeout(back,3000);
 
-        }else{
-            let values=oppdmg();
-            hp1=values[0]
-            let c=values[1]
-            console.log(values)
-            setTimeout(()=>{
-            document.getElementById("P1HP").style.width=(hp1/maxHp)*100+"%";
-            document.getElementById("dialoguePannel").style.width="100%";
-            document.getElementById("actionPannel").style.display="none";
-            document.getElementById("fightActionPannel").style.display="none";
-            document.getElementById("dialogue").textContent="Charizad did a "+ values[2];
-            },0);
-            if(values[1]==true){
-               setTimeout(() => {
-                document.getElementById("dialogue").textContent =
-                "It was a critical hit!";
-             }, 1500);
-            }
+//         }else{
+//             let values=oppdmg();
+//             hp1=values[0]
+//             let c=values[1]
+//             console.log(values)
+//             setTimeout(()=>{
+//             document.getElementById("P1HP").style.width=(hp1/maxHp)*100+"%";
+//             document.getElementById("dialoguePannel").style.width="100%";
+//             document.getElementById("actionPannel").style.display="none";
+//             document.getElementById("fightActionPannel").style.display="none";
+//             document.getElementById("dialogue").textContent="Charizad did a "+ values[2];
+//             },0);
+//             if(values[1]==true){
+//                setTimeout(() => {
+//                 document.getElementById("dialogue").textContent =
+//                 "It was a critical hit!";
+//              }, 1500);
+//             }
 
-            setTimeout(()=>{
-            if(hp1<=0){
-                return
-            }
-            hp2-=dmg;
+//             setTimeout(()=>{
+//             if(hp1<=0){
+//                 return
+//             }
+//             hp2-=dmg;
             
-            if (hp2<0){
-                hp2=0;
-            }
+//             if (hp2<0){
+//                 hp2=0;
+//             }
             
-            document.getElementById("P2HP").style.width=(hp2/maxHp)*100+"%";
-            document.getElementById("dialoguePannel").style.width="100%";
-            document.getElementById("actionPannel").style.display="none";
-            document.getElementById("fightActionPannel").style.display="none";
-            document.getElementById("dialogue").textContent="Pikachu did a volt tackle";
-        },2000)
-            setTimeout(back,3000);
-        }
-    }
+//             document.getElementById("P2HP").style.width=(hp2/maxHp)*100+"%";
+//             document.getElementById("dialoguePannel").style.width="100%";
+//             document.getElementById("actionPannel").style.display="none";
+//             document.getElementById("fightActionPannel").style.display="none";
+//             document.getElementById("dialogue").textContent="Pikachu did a volt tackle";
+//         },2000)
+//             setTimeout(back,3000);
+//         }
+//     }
 
-    function Crit(){
-        document.getElementById("dialogue").textContent="It was a critial hit";
-    }
+//     function Crit(){
+//         document.getElementById("dialogue").textContent="It was a critial hit";
+//     }
 
-    function oppdmg(){
+//     function oppdmg(){
     
-        if (hp2==0){
-            return
-        }
-        let charizardMove = charizard.moves[
-            Math.floor(Math.random() * Pokemon[1].moves.length)
-        ];
+//         if (hp2==0){
+//             return
+//         }
+//         let charizardMove = charizard.moves[
+//             Math.floor(Math.random() * Pokemon[1].moves.length)
+//         ];
 
-        console.log("Charizard used " + charizardMove.name);
+//         console.log("Charizard used " + charizardMove.name);
 
-        let basePower = charizardMove.power;
-        let attackType = charizardMove.category;
+//         let basePower = charizardMove.power;
+//         let attackType = charizardMove.category;
 
-        let attack = charizard.stats.attack;
-        let spAttack = charizard.stats.spAttack;
+//         let attack = charizard.stats.attack;
+//         let spAttack = charizard.stats.spAttack;
         
-        let maxHp= pikachu.stats.hp;
-        let defense = pikachu.stats.defense;
-        let spDefense = pikachu.stats.spDefense;
+//         let maxHp= pikachu.stats.hp;
+//         let defense = pikachu.stats.defense;
+//         let spDefense = pikachu.stats.spDefense;
 
-        let stab = false;
-        let crit = false;
+//         let stab = false;
+//         let crit = false;
 
-        let prob = Math.floor(Math.random() * 3);
+//         let prob = Math.floor(Math.random() * 3);
 
-        if (prob == 0) {
-            crit = true;
-        }
+//         if (prob == 0) {
+//             crit = true;
+//         }
 
     
-        if (charizard.types.includes(charizardMove.type)) {
-            stab = true;
-        }
+//         if (charizard.types.includes(charizardMove.type)) {
+//             stab = true;
+//         }
 
         
-        let dmg = 0;
+//         let dmg = 0;
 
-        if (attackType == "Physical") {
-            dmg = getDmg(
-                basePower,
-                attack,
-                defense,
-                stab,
-                crit
-            );
-        } else {
-            dmg = getDmg(
-                basePower,
-                spAttack,
-                spDefense,
-                stab,
-                crit
-            );
-        }
+//         if (attackType == "Physical") {
+//             dmg = getDmg(
+//                 basePower,
+//                 attack,
+//                 defense,
+//                 stab,
+//                 crit
+//             );
+//         } else {
+//             dmg = getDmg(
+//                 basePower,
+//                 spAttack,
+//                 spDefense,
+//                 stab,
+//                 crit
+//             );
+//         }
 
-        console.log("Damage:", dmg);
+//         console.log("Damage:", dmg);
 
-        hp1 -= dmg;
+//         hp1 -= dmg;
 
-        if (hp1 < 0) {
-            hp1 = 0;
-        }
-        console.log("Pikachu HP:", hp1);
-        return [hp1,crit,charizardMove.name];
+//         if (hp1 < 0) {
+//             hp1 = 0;
+//         }
+//         console.log("Pikachu HP:", hp1);
+//         return [hp1,crit,charizardMove.name];
 
-    }
+//     }
 
-    function getDmg(basePower,attack,defense,stab,crit){
-       let tmp =((22*basePower*(attack/defense))/50+2);
-       if(stab==true){
-            tmp=tmp*1.5;
-       }
-       if(crit==true){
-            tmp=tmp*1.5;
-       }
-       return tmp;
-    }
+//     function getDmg(basePower,attack,defense,stab,crit){
+//        let tmp =((22*basePower*(attack/defense))/50+2);
+//        if(stab==true){
+//             tmp=tmp*1.5;
+//        }
+//        if(crit==true){
+//             tmp=tmp*1.5;
+//        }
+//        return tmp;
+//     }
 
 
-    function back(){
-        let fight=document.getElementById("fightActionPannel").style.display;
-        let item=document.getElementById("itemActionPannel").style.display
-        if(fight==="grid"){
-            document.getElementById("fightActionPannel").style.display="none";
-        } else if (item==="flex"){
-         document.getElementById("itemActionPannel").style.display="none";
-        }
-        document.getElementById("actionPannel").style.display="grid";
-        document.getElementById("dialoguePannel").style.width="50%";
-        document.getElementById("dialogue").textContent="What will you do?"
-    }
+//     function back(){
+//         let fight=document.getElementById("fightActionPannel").style.display;
+//         let item=document.getElementById("itemActionPannel").style.display
+//         if(fight==="grid"){
+//             document.getElementById("fightActionPannel").style.display="none";
+//         } else if (item==="flex"){
+//          document.getElementById("itemActionPannel").style.display="none";
+//         }
+//         document.getElementById("actionPannel").style.display="grid";
+//         document.getElementById("dialoguePannel").style.width="50%";
+//         document.getElementById("dialogue").textContent="What will you do?"
+//     }
     
-    function pokemon(){
-        document.getElementById("dialoguePannel").style.width="100%";
-        document.getElementById("actionPannel").style.display="none";
-        document.getElementById("dialogue").textContent="You don't have other pokemon";
-        setTimeout(back,1000);
-    }
-    function item(){
-        document.getElementById("itemActionPannel").style.display="flex";
-        document.getElementById("actionPannel").style.display="none";
-    }
+//     function pokemon(){
+//         document.getElementById("dialoguePannel").style.width="100%";
+//         document.getElementById("actionPannel").style.display="none";
+//         document.getElementById("dialogue").textContent="You don't have other pokemon";
+//         setTimeout(back,1000);
+//     }
+//     function item(){
+//         document.getElementById("itemActionPannel").style.display="flex";
+//         document.getElementById("actionPannel").style.display="none";
+//     }
 
-    //no of potions
-   let potionCount = 3;
+//     //no of potions
+//    let potionCount = 3;
    
-    function potion() {
-        const maxHp = pikachu.stats.hp;
+//     function potion() {
+//         const maxHp = pikachu.stats.hp;
         
-        if (potionCount > 0) {
-            hp1 += 30;
+//         if (potionCount > 0) {
+//             hp1 += 30;
 
-            if (hp1 > maxHp) {
-                hp1 = maxHp;
-            }
+//             if (hp1 > maxHp) {
+//                 hp1 = maxHp;
+//             }
 
-            potionCount--;
+//             potionCount--;
 
-            let tmp = (hp1 / maxHp) * 100;
-            let hpBar=tmp+"%";
-            console.log(tmp);
-            console.log(typeof hpBar);
-            document.getElementById("P1HP").style.width = hpBar;
-            document.getElementById("potionText").textContent="Potion x"+potionCount;
-            back();
-        }else{
-            document.getElementById("itemActionPannel").style.display="none"
-            document.getElementById("dialoguePannel").style.width="100%";
-            document.getElementById("dialogue").textContent="You don't have potion left";
-            setTimeout(back,1500);
-        }
+//             let tmp = (hp1 / maxHp) * 100;
+//             let hpBar=tmp+"%";
+//             console.log(tmp);
+//             console.log(typeof hpBar);
+//             document.getElementById("P1HP").style.width = hpBar;
+//             document.getElementById("potionText").textContent="Potion x"+potionCount;
+//             back();
+//         }else{
+//             document.getElementById("itemActionPannel").style.display="none"
+//             document.getElementById("dialoguePannel").style.width="100%";
+//             document.getElementById("dialogue").textContent="You don't have potion left";
+//             setTimeout(back,1500);
+//         }
 
-    }
+//     }
 
 
 
-    function run(){
-        document.getElementById("dialogue").textContent="You can't run from a pokemon battle"
-    }
-    const text = document.getElementById("dialogue");
+//     function run(){
+//         document.getElementById("dialogue").textContent="You can't run from a pokemon battle"
+//     }
+//     const text = document.getElementById("dialogue");
 
 
     
