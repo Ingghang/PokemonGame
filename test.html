@@ -727,8 +727,9 @@ function spriteUrl(id, facingBack) {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${folder}${id}.png`;
 }
 
-const selectedIds = new Set();
 
+const selectedIds = new Set();
+const MAX_TEAM_SIZE=6;
 function renderSelectionGrid() {
   const grid = document.getElementById("pokemonGrid");
   grid.innerHTML = "";
@@ -749,12 +750,27 @@ function renderSelectionGrid() {
       <p class="cardName">${template.name}</p>
       <div class="typeBadgeRow">${typeBadges}</div>
     `;
-    
+
     card.addEventListener("click", () => toggleSelection(template.id));
     grid.appendChild(card);
   });
 }
+function toggleSelection(id) {
+  if (selectedIds.has(id)) {
+    selectedIds.delete(id);
+  } else if (selectedIds.size < MAX_TEAM_SIZE) {
+    selectedIds.add(id);
+  }
+  renderSelectionGrid();
+  updateSelectionUI();
+}
+
+function updateSelectionUI() {
+  document.getElementById("selectionCount").textContent = `Selected: ${selectedIds.size} / 6`;
+  document.getElementById("startBattleBtn").disabled = selectedIds.size === 0;
+}
 renderSelectionGrid();
+updateSelectionUI();
 //     function fight(){
 //         console.log("fight button was pressed");
 //         document.getElementById("actionPannel").style.display="none";
