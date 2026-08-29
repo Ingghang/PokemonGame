@@ -248,6 +248,20 @@
         button.actionBtn:hover:not(:disabled) { background-color: var(--btn-red-dark); }
         button.actionBtn:disabled { background-color: #6b6b6b; cursor: not-allowed; opacity: 0.6; }
 
+        .startBattleBtn {
+    display: block;
+    margin: 18px auto 0;
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    background: var(--btn-red);
+    border: 4px solid black;
+    border-radius: 10px;
+  }
+  .startBattleBtn:hover:not(:disabled) { background: var(--btn-red-dark); }
+  .startBattleBtn:disabled { background: #b7bec7; cursor: not-allowed; }
+
         .moveBtn { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; }
         .moveBtn .moveMeta { font-size: 0.65rem; font-weight: normal; opacity: 0.85; }
 
@@ -255,12 +269,50 @@
             color:#F8FAFC;
         }
         .screen { 
-            display: block;
+            display: none;
             width: 100%;
             max-width: 1000px; 
         }
+    .screen.active { display: block; }
+        .selectionPanel {
+          background: white;
+          border-radius: 16px;
+          padding: 20px;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+        }
+          .selectionHeader p { margin: 0; font-weight: bold; color: #33475b; }
 
-         .screen.active { display: block; }
+  .pokemonGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .pokemonCard {
+    border: 3px solid #d8dde3;
+    border-radius: 12px;
+    background: #f7f9fb;
+    padding: 10px;
+    text-align: center;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .pokemonCard img { width: 90px; height: 90px; image-rendering: pixelated; }
+  .pokemonCard .cardName { font-weight: bold; color: #33475b; margin: 4px 0; }
+  .pokemonCard:hover { transform: translateY(-3px); }
+  .pokemonCard.selected {
+    border-color: #2f9bff;
+    background: #e7f2ff;
+  }
+     
+  .typeBadgeRow { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; }
+  .typeBadge {
+    font-size: 0.65rem;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
     </style>
 </head>
 
@@ -277,8 +329,19 @@
             </a>
         </nav>
     </header>
-    <audio src="img/battleOST.mp3" autoplay loop></audio>
+    <!-- <audio src="img/battleOST.mp3" autoplay loop></audio> -->
   
+    <section id="selectionScreen" class="screen active" aria-label="Team selection">
+  <div class="selectionPanel">
+    <div class="selectionHeader">
+      <p>Choose your team (1–6 Pokémon)</p>
+      <p id="selectionCount">Selected: 0</p>
+    </div>
+    <div id="pokemonGrid" class="pokemonGrid" role="list"></div>
+    <button id="startBattleBtn" class="startBattleBtn" disabled>Start Battle</button>
+  </div>
+</section>
+
 <section id="battleScreen" class="screen" aria-label="Battle">
   <div class="mainBorder">
     <div class="upper">
@@ -659,6 +722,39 @@ const el = {
   btnItemBack: document.getElementById("btnItemBack")
 };
 
+function spriteUrl(id, facingBack) {
+  const folder = facingBack ? "back/" : "";
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${folder}${id}.png`;
+}
+
+const selectedIds = new Set();
+
+function renderSelectionGrid() {
+  const grid = document.getElementById("pokemonGrid");
+  grid.innerHTML = "";
+
+  POKEMON_TEMPLATES.forEach((template) => {
+    const card = document.createElement("button");
+    card.className = "pokemonCard";
+    card.setAttribute("role", "listitem");
+    card.setAttribute("aria-pressed", selectedIds.has(template.id) ? "true" : "false"); //if pokemon is selecteed or not for accessibility software
+    if (selectedIds.has(template.id)){ card.classList.add("selected");}
+
+    const typeBadges = template.types
+      .map((t) => `<span class="typeBadge" style="background:${TYPE_COLORS[t]}">${t}</span>`)
+      .join("");
+
+    card.innerHTML = `
+      <img src="${spriteUrl(template.id, false)}" alt="${template.name}">
+      <p class="cardName">${template.name}</p>
+      <div class="typeBadgeRow">${typeBadges}</div>
+    `;
+    
+    card.addEventListener("click", () => toggleSelection(template.id));
+    grid.appendChild(card);
+  });
+}
+renderSelectionGrid();
 //     function fight(){
 //         console.log("fight button was pressed");
 //         document.getElementById("actionPannel").style.display="none";
