@@ -787,6 +787,9 @@ function spriteUrl(id, facingBack) {
 const selectedIds = new Set();
 const MAX_TEAM_SIZE=6;
 const STARTING_POTIONS=2;
+const POTION_HEAL_AMOUNT=30;
+const CRIT_CHANCE = 0.0625; 
+const MIN_RANDOM_FACTOR = 0.85;
 function renderSelectionGrid() {
   const grid = document.getElementById("pokemonGrid");
   grid.innerHTML = "";
@@ -870,6 +873,7 @@ function getActivePokemon(team, activeIndex) {
   return team[activeIndex];
 }
 
+function clamp (value, min, max) {return  Math.max(min, Math.min(max, value));}
 function randomInt  (min, max) {return Math.floor(Math.random() * (max - min + 1)) + min;}
 function pickRandom (array) { return  array[randomInt(0, array.length - 1)];}
 
@@ -882,6 +886,10 @@ const state = {
   battleOver: false,
   inputLocked: false
 };
+
+function chooseEnemyMove(enemyPokemon) {
+  return pickRandom(enemyPokemon.moves);
+}
 
 function renderBattlers() {
   const player = getActivePokemon(state.playerTeam, state.playerActive);
@@ -920,274 +928,237 @@ function startBattle() {
   document.getElementById("battleScreen").classList.add("active");
   document.getElementById("mainOST").play();
   renderBattlers();
- 
+  
 }
-//     function fight(){
-//         console.log("fight button was pressed");
-//         document.getElementById("actionPannel").style.display="none";
-//         document.getElementById("fightActionPannel").style.display="grid";
-//     }
 
-//     const pikachu = Pokemon.find(p => p.name === "Pikachu");
-//     const charizard = Pokemon.find(p => p.name === "Charizard");
+function showPanel(panelToShow) {
+  [el.actionPanel, el.fightPanel, el.pokemonPanel, el.itemPanel].forEach((panel) => {
+    panel.classList.remove("visible");
+  });
+  panelToShow.classList.add("visible");
+  
+}
 
-//     let hp1=pikachu.stats.hp;
-//     let hp2=charizard.stats.hp;
+function setPanelsEnabled(enabled) {
+  document.querySelectorAll(".panel button").forEach((btn) => {
+    btn.disabled = !enabled;
+  });
+}
 
-//     function attack1(){
-//         if (hp1==0){
-//             return;
-//         }
-//         let voltTackle = Pokemon[0].moves.find(move => move.name === "Volt Tackle");
-//         let basePower=voltTackle.power;
-//         let attackType=voltTackle.category;
-//         let attack=pikachu.stats.attack;
-//         let spAttack=pikachu.stats.spAttack;
-//         let defense=charizard.stats.defense;
-//         let spDefense=charizard.stats.spDefense;
-//         let maxHp=charizard.stats.hp;
-//         let p1Speed=pikachu.stats.speed;
-//         let p2Speed=charizard.stats.speed;
-//         let dmg=0;
-//         let stab=false;
-//         let crit=false; 
-//         let prob=Math.floor(Math.random()*3);
-//         console.log(prob)
-//         if(prob==0){
-//             crit=true;
-//         }
-//         if (pikachu.types.includes(voltTackle.type)){
-//             stab=true;
-//         }
-//         if (attackType=="Physical"){
-//             dmg=getDmg(basePower,attack,defense,stab,crit);
-//         } else {
-//             dmg=getDmg(basePower,spAttack,spDefense,stab,crit);
-//         }
+function renderMoveButtons(onSelectMove) {
+  const player = getActivePokemon(state.playerTeam, state.playerActive);
+  el.fightPanel.innerHTML = "";
 
-        
-//         console.log(dmg)
-//         if(p1Speed>p2Speed){
-//         hp2-=dmg;
-//         if (hp2<0){
-//             hp2=0;
-//         }
-//         setTimeout(()=>{
-//         document.getElementById("P2HP").style.width=(hp2/maxHp)*100+"%";
-//         document.getElementById("dialoguePannel").style.width="100%";
-//         document.getElementById("actionPannel").style.display="none";
-//         document.getElementById("fightActionPannel").style.display="none";
-//         document.getElementById("dialogue").textContent="Pikachu did a volt tackle";
-//         },0)
-//         if(crit==true){
-//             setTimeout(Crit,1000);
-//         }
-//         if(hp2<=0){
-//             return;
-//         }
-//             let values=oppdmg();
-//             hp1=values[0]
-//             let c=values[1]
-//             console.log(values)
-//             setTimeout(()=>{
-//             document.getElementById("P1HP").style.width=(hp1/maxHp)*100+"%";
-//             document.getElementById("dialoguePannel").style.width="100%";
-//             document.getElementById("actionPannel").style.display="none";
-//             document.getElementById("fightActionPannel").style.display="none";
-//             document.getElementById("dialogue").textContent="Charizad did a "+ values[2];
-//             },2000);
-//             if(values[1]==true){
-//                setTimeout(() => {
-//                 document.getElementById("dialogue").textContent =
-//                 "It was a critical hit!";
-//              }, 2500);
-//             }
-//             setTimeout(back,3000);
+  player.moves.forEach((move) => {
+    const button = document.createElement("button");
+    button.className = "actionBtn moveBtn";
+    button.style.backgroundColor = TYPE_COLORS[move.type] || "var(--btn-red)";
+    button.innerHTML = `${move.name}<span class="moveMeta">${move.type} · ${move.category}</span>`;
+    button.addEventListener("click", () => onSelectMove(move)); //onSelectMove is a call back function
+    el.fightPanel.appendChild(button);
+  });
+  const backButton = document.createElement("button");
+  backButton.className = "actionBtn";
+  backButton.textContent = "Back";
+  backButton.addEventListener("click", backToActionPanel);
+  el.fightPanel.appendChild(backButton);
+}
 
-//         }else{
-//             let values=oppdmg();
-//             hp1=values[0]
-//             let c=values[1]
-//             console.log(values)
-//             setTimeout(()=>{
-//             document.getElementById("P1HP").style.width=(hp1/maxHp)*100+"%";
-//             document.getElementById("dialoguePannel").style.width="100%";
-//             document.getElementById("actionPannel").style.display="none";
-//             document.getElementById("fightActionPannel").style.display="none";
-//             document.getElementById("dialogue").textContent="Charizad did a "+ values[2];
-//             },0);
-//             if(values[1]==true){
-//                setTimeout(() => {
-//                 document.getElementById("dialogue").textContent =
-//                 "It was a critical hit!";
-//              }, 1500);
-//             }
+function backToActionPanel() {
+  showPanel(el.actionPanel);
+  setDialogue("What will you do?");
+}
 
-//             setTimeout(()=>{
-//             if(hp1<=0){
-//                 return
-//             }
-//             hp2-=dmg;
-            
-//             if (hp2<0){
-//                 hp2=0;
-//             }
-            
-//             document.getElementById("P2HP").style.width=(hp2/maxHp)*100+"%";
-//             document.getElementById("dialoguePannel").style.width="100%";
-//             document.getElementById("actionPannel").style.display="none";
-//             document.getElementById("fightActionPannel").style.display="none";
-//             document.getElementById("dialogue").textContent="Pikachu did a volt tackle";
-//         },2000)
-//             setTimeout(back,3000);
-//         }
-//     }
+function setDialogue(text) {
+  el.dialogue.textContent = text;
+}
 
-//     function Crit(){
-//         document.getElementById("dialogue").textContent="It was a critial hit";
-//     }
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-//     function oppdmg(){
+function applyDamage(pokemon, damage) {
+  pokemon.currentHp = clamp(pokemon.currentHp - damage, 0, pokemon.maxHp);
+  pokemon.fainted = pokemon.currentHp === 0;
+  return pokemon.fainted;
+}
+
+function healPokemon(pokemon, amount) {
+  pokemon.currentHp = clamp(pokemon.currentHp + amount, 0, pokemon.maxHp);
+}
+
+el.btnFight.addEventListener("click", () => {
+  console.log("test")
+  showPanel(el.fightPanel);
+  renderMoveButtons(handlePlayerAttack);
+});
+
+el.btnPokemon.addEventListener("click", () => {
+  showPanel(el.pokemonPanel);
+  renderPokemonRoster(handlePlayerSwitch, false);
+});
+
+el.btnItem.addEventListener("click", () => {
+  showPanel(el.itemPanel);
+  el.btnPotion.textContent = `Potion x${state.potionCount}`;
+  el.btnPotion.disabled = state.potionCount === 0;
+});
+
+el.btnItemBack.addEventListener("click", backToActionPanel);
+
+el.btnRun.addEventListener("click", () => {
+  setDialogue("You can't run from a Pokémon battle!");
+});
+
+
+async function handlePlayerAttack(move) {
+  if (state.inputLocked) return;
+  await runTurn({ type: "attack", move });
+}
+
+function resolveTurnOrder(playerPokemon, playerMove, enemyPokemon, enemyMove) {
+  if (playerMove.priority !== enemyMove.priority) {
+    return playerMove.priority > enemyMove.priority ? "player" : "enemy";
+  }
+  if (playerPokemon.stats.speed !== enemyPokemon.stats.speed) {
+    return playerPokemon.stats.speed > enemyPokemon.stats.speed ? "player" : "enemy";
+  }
+  return Math.random() < 0.5 ? "player" : "enemy";
+}
+
+
+async function runTurn(playerAction) {
+  state.inputLocked = true;
+  setPanelsEnabled(false);
+  showPanel(el.actionPanel);
+
+  const playerPokemon = getActivePokemon(state.playerTeam, state.playerActive);
+  const enemyPokemon = getActivePokemon(state.enemyTeam, state.enemyActive);
+  const enemyMove = chooseEnemyMove(enemyPokemon);
+
+  if (playerAction.type === "item") {
+    healPokemon(playerPokemon, POTION_HEAL_AMOUNT);
+    state.potionCount--;
+    renderBattlers();
+    setDialogue(`You used a Potion on ${playerPokemon.name}!`);
+    await wait(1000);
+  } else if (playerAction.type === "switch") {
+    setDialogue(`Go, ${playerPokemon.name}!`);
+    await wait(900);
+  } else {
+    // Attack: whoever is faster (respecting move priority) goes first.
+    const order = resolveTurnOrder(playerPokemon, playerAction.move, enemyPokemon, enemyMove);
+    if (order === "player") {
+      await executeMove(playerPokemon, enemyPokemon, playerAction.move, el.p1Slot, el.p2Slot, true);
+      if (await handleFaintIfNeeded(enemyPokemon, false)) { finishTurn(); return; }
+      await executeMove(enemyPokemon, playerPokemon, enemyMove, el.p2Slot, el.p1Slot, false);
+      if (await handleFaintIfNeeded(playerPokemon, true)) { finishTurn(); return; }
+    } else {
+      await executeMove(enemyPokemon, playerPokemon, enemyMove, el.p2Slot, el.p1Slot, false);
+      if (await handleFaintIfNeeded(playerPokemon, true)) { finishTurn(); return; }
+      await executeMove(playerPokemon, enemyPokemon, playerAction.move, el.p1Slot, el.p2Slot, true);
+      if (await handleFaintIfNeeded(enemyPokemon, false)) { finishTurn(); return; }
+    }
+    finishTurn();
+    return;
+  }
+
+  // Non-attack player actions still give the opponent a turn.
+  await executeMove(enemyPokemon, playerPokemon, enemyMove, el.p2Slot, el.p1Slot, false);
+  if (await handleFaintIfNeeded(playerPokemon, true)) { finishTurn(); return; }
+  finishTurn();
+}
+
+// Returns true if the battle ended as a result of this faint.
+async function handleFaintIfNeeded(pokemon, isPlayerPokemon) {
+  if (!pokemon.fainted) return false;
+
+  const slot = isPlayerPokemon ? el.p1Slot : el.p2Slot;
+  setDialogue(`${pokemon.name} fainted!`);
+  
+
+  await wait(400);
+ 
+
+  const team = isPlayerPokemon ? state.playerTeam : state.enemyTeam;
+  if (isTeamDefeated(team)) {
+    endBattle(!isPlayerPokemon);
+    return true;
+  }
+
+  if (isPlayerPokemon) {
+    setDialogue(`${pokemon.name} fainted! Choose your next Pokémon.`);
+    state.inputLocked = false;
+    setPanelsEnabled(true);
+    showPanel(el.pokemonPanel);
     
-//         if (hp2==0){
-//             return
-//         }
-//         let charizardMove = charizard.moves[
-//             Math.floor(Math.random() * Pokemon[1].moves.length)
-//         ];
+  } else {
+    state.enemyActive = getNextHealthyIndex(state.enemyTeam);
+    renderBattlers();
+    setDialogue(`The opponent sent out ${getActivePokemon(state.enemyTeam, state.enemyActive).name}!`);
+    await wait(900);
+  }
+  return false;
+}
 
-//         console.log("Charizard used " + charizardMove.name);
+function finishTurn() {
+  renderBattlers();
+  state.inputLocked = false;
+  setPanelsEnabled(true);
+  backToActionPanel();
+}
+async function executeMove(attacker, defender, move, attackerSlot, defenderSlot, isPlayerAttacker) {
+  setDialogue(`${attacker.name} used ${move.name}!`);
+  await wait(500);
+ // await playAnimation(attackerSlot, "anim-attacker");
 
-//         let basePower = charizardMove.power;
-//         let attackType = charizardMove.category;
+  const result = calculateDamage(attacker, defender, move);
 
-//         let attack = charizard.stats.attack;
-//         let spAttack = charizard.stats.spAttack;
-        
-//         let maxHp= pikachu.stats.hp;
-//         let defense = pikachu.stats.defense;
-//         let spDefense = pikachu.stats.spDefense;
+  if (result.isStatus) {
+    setDialogue(`${attacker.name} used ${move.name}, but nothing happened.`);
+    await wait(900);
+    return;
+  }
+  if (result.missed) {
+    setDialogue(`${attacker.name}'s attack missed!`);
+    await wait(900);
+    return;
+  }
 
-//         let stab = false;
-//         let crit = false;
+  applyDamage(defender, result.damage);
+  // await playAnimation(defenderSlot, "anim-hit");
+  renderBattlers();
 
-//         let prob = Math.floor(Math.random() * 3);
-
-//         if (prob == 0) {
-//             crit = true;
-//         }
-
-    
-//         if (charizard.types.includes(charizardMove.type)) {
-//             stab = true;
-//         }
-
-        
-//         let dmg = 0;
-
-//         if (attackType == "Physical") {
-//             dmg = getDmg(
-//                 basePower,
-//                 attack,
-//                 defense,
-//                 stab,
-//                 crit
-//             );
-//         } else {
-//             dmg = getDmg(
-//                 basePower,
-//                 spAttack,
-//                 spDefense,
-//                 stab,
-//                 crit
-//             );
-//         }
-
-//         console.log("Damage:", dmg);
-
-//         hp1 -= dmg;
-
-//         if (hp1 < 0) {
-//             hp1 = 0;
-//         }
-//         console.log("Pikachu HP:", hp1);
-//         return [hp1,crit,charizardMove.name];
-
-//     }
-
-//     function getDmg(basePower,attack,defense,stab,crit){
-//        let tmp =((22*basePower*(attack/defense))/50+2);
-//        if(stab==true){
-//             tmp=tmp*1.5;
-//        }
-//        if(crit==true){
-//             tmp=tmp*1.5;
-//        }
-//        return tmp;
-//     }
+  if (result.isCritical) {
+    setDialogue("A critical hit!");
+    await wait(700);
+  }
+}
 
 
-//     function back(){
-//         let fight=document.getElementById("fightActionPannel").style.display;
-//         let item=document.getElementById("itemActionPannel").style.display
-//         if(fight==="grid"){
-//             document.getElementById("fightActionPannel").style.display="none";
-//         } else if (item==="flex"){
-//          document.getElementById("itemActionPannel").style.display="none";
-//         }
-//         document.getElementById("actionPannel").style.display="grid";
-//         document.getElementById("dialoguePannel").style.width="50%";
-//         document.getElementById("dialogue").textContent="What will you do?"
-//     }
-    
-//     function pokemon(){
-//         document.getElementById("dialoguePannel").style.width="100%";
-//         document.getElementById("actionPannel").style.display="none";
-//         document.getElementById("dialogue").textContent="You don't have other pokemon";
-//         setTimeout(back,1000);
-//     }
-//     function item(){
-//         document.getElementById("itemActionPannel").style.display="flex";
-//         document.getElementById("actionPannel").style.display="none";
-//     }
+function calculateDamage(attacker, defender, move) {
+  if (move.power === 0) {
+    return { damage: 0, isCritical: false, missed: false, isStatus: true };
+  }
 
-//     //no of potions
-//    let potionCount = 3;
-   
-//     function potion() {
-//         const maxHp = pikachu.stats.hp;
-        
-//         if (potionCount > 0) {
-//             hp1 += 30;
+  const missed = Math.random() * 100 > move.accuracy;
+  if (missed) {
+    return { damage: 0, isCritical: false, missed: true, isStatus: false };
+  }
 
-//             if (hp1 > maxHp) {
-//                 hp1 = maxHp;
-//             }
+  const isCritical = Math.random() < CRIT_CHANCE;
+  const attackStat = move.category === "Physical" ? attacker.stats.attack : attacker.stats.spAttack;
+  const defenseStat = move.category === "Physical" ? defender.stats.defense : defender.stats.spDefense;
+  const level = 50;
+  const randomFactor = MIN_RANDOM_FACTOR + Math.random() * (1 - MIN_RANDOM_FACTOR);
+  const critMultiplier = isCritical ? 1.5 : 1;
 
-//             potionCount--;
+  const rawDamage =
+    (((2 * level) / 5 + 2) * move.power * (attackStat / defenseStat)) / 50 + 2;
+  const damage = Math.max(1, Math.floor(rawDamage * critMultiplier * randomFactor));
 
-//             let tmp = (hp1 / maxHp) * 100;
-//             let hpBar=tmp+"%";
-//             console.log(tmp);
-//             console.log(typeof hpBar);
-//             document.getElementById("P1HP").style.width = hpBar;
-//             document.getElementById("potionText").textContent="Potion x"+potionCount;
-//             back();
-//         }else{
-//             document.getElementById("itemActionPannel").style.display="none"
-//             document.getElementById("dialoguePannel").style.width="100%";
-//             document.getElementById("dialogue").textContent="You don't have potion left";
-//             setTimeout(back,1500);
-//         }
-
-//     }
-
-
-
-//     function run(){
-//         document.getElementById("dialogue").textContent="You can't run from a pokemon battle"
-//     }
-//     const text = document.getElementById("dialogue");
+  return { damage, isCritical, missed: false, isStatus: false };
+}
 
 
     
