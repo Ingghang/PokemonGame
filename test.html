@@ -150,7 +150,12 @@
             overflow: hidden;
             min-height: 0;
         }
-
+          .pokemonSlot {
+            height: 60%;
+            width: 50%;
+            position: absolute;
+        
+          }
        .pokemonSlot img {
             width: 100%;
             height: 100%;
@@ -329,7 +334,6 @@
             </a>
         </nav>
     </header>
-    <!-- <audio src="img/battleOST.mp3" autoplay loop></audio> -->
   
     <section id="selectionScreen" class="screen active" aria-label="Team selection">
   <div class="selectionPanel">
@@ -343,6 +347,7 @@
 </section>
 
 <section id="battleScreen" class="screen" aria-label="Battle">
+  <audio src="img/battleOST.mp3" loop id="mainOST"></audio>
   <div class="mainBorder">
     <div class="upper">
       <div class="pokemonSlot pokemon1">
@@ -781,6 +786,7 @@ function spriteUrl(id, facingBack) {
 
 const selectedIds = new Set();
 const MAX_TEAM_SIZE=6;
+const STARTING_POTIONS=2;
 function renderSelectionGrid() {
   const grid = document.getElementById("pokemonGrid");
   grid.innerHTML = "";
@@ -820,8 +826,102 @@ function updateSelectionUI() {
   document.getElementById("selectionCount").textContent = `Selected: ${selectedIds.size} / 6`;
   document.getElementById("startBattleBtn").disabled = selectedIds.size === 0;
 }
+
 renderSelectionGrid();
 updateSelectionUI();
+
+//color changing depending on hp
+function hpBarColor(pokemon) {
+  const ratio = pokemon.currentHp / pokemon.maxHp;
+  if (ratio > 0.5) return "var(--hp-green)";
+  if (ratio > 0.2) return "var(--hp-yellow)";
+  return "var(--hp-red)";
+}
+document.getElementById("startBattleBtn").addEventListener("click", startBattle);
+
+function createBattlePokemon(template) {
+  
+  const clone = structuredClone(template); // structuredClone another way to copy objects 
+  return {
+    ...clone,
+    currentHp: clone.stats.hp,
+    maxHp: clone.stats.hp,
+    fainted: false
+  };
+}
+
+function sampleWithoutReplacement(array, count) {
+  const pool = [...array];
+  console.log("array=",array);
+  console.log("pool=",pool);
+  const result = [];
+  //fisher yates shuffle algorithm
+  for (let i = 0; i < count; i++) {
+    const randomIndex = randomInt(0, pool.length - 1);
+    const chosen = pool.splice(randomIndex, 1)[0];
+    console.log("chosen=",chosen)
+    result.push(chosen);
+  }
+
+  return result;
+}
+
+function getActivePokemon(team, activeIndex) {
+  return team[activeIndex];
+}
+
+function randomInt  (min, max) {return Math.floor(Math.random() * (max - min + 1)) + min;}
+function pickRandom (array) { return  array[randomInt(0, array.length - 1)];}
+
+const state = {
+  playerTeam: [],
+  enemyTeam: [],
+  playerActive: 0,
+  enemyActive: 0,
+  potionCount: STARTING_POTIONS,
+  battleOver: false,
+  inputLocked: false
+};
+
+function renderBattlers() {
+  const player = getActivePokemon(state.playerTeam, state.playerActive);
+  const enemy = getActivePokemon(state.enemyTeam, state.enemyActive);
+
+  el.p1Sprite.src = spriteUrl(player.id, true);
+  el.p1Sprite.alt = `${player.name}, your active Pokémon`;
+  renderHpCard(player, el.p1Name, el.p1HpFill, el.p1HpText);
+
+  el.p2Sprite.src = spriteUrl(enemy.id, false);
+  el.p2Sprite.alt = `${enemy.name}, opponent's active Pokémon`;
+  renderHpCard(enemy, el.p2Name, el.p2HpFill, el.p2HpText);
+}
+
+function renderHpCard(pokemon, nameEl, fillEl, textEl) {
+  nameEl.textContent = pokemon.name;
+  const percent = (pokemon.currentHp / pokemon.maxHp) * 100;
+  fillEl.style.width = `${percent}%`;
+  fillEl.style.backgroundColor = hpBarColor(pokemon);
+  textEl.textContent = `${pokemon.currentHp} / ${pokemon.maxHp} HP`;
+}
+
+function startBattle() {
+  const chosenTemplates = POKEMON_TEMPLATES.filter((t) => selectedIds.has(t.id));
+  const enemyTemplates = sampleWithoutReplacement(POKEMON_TEMPLATES, chosenTemplates.length);
+
+  state.playerTeam = chosenTemplates.map(createBattlePokemon);
+  state.enemyTeam = enemyTemplates.map(createBattlePokemon);
+  state.playerActive = 0;
+  state.enemyActive = 0;
+  state.potionCount = STARTING_POTIONS;
+  state.battleOver = false;
+  state.inputLocked = false;
+
+  document.getElementById("selectionScreen").classList.remove("active");
+  document.getElementById("battleScreen").classList.add("active");
+  document.getElementById("mainOST").play();
+  renderBattlers();
+ 
+}
 //     function fight(){
 //         console.log("fight button was pressed");
 //         document.getElementById("actionPannel").style.display="none";
