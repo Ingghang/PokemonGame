@@ -318,6 +318,25 @@
     text-transform: uppercase;
     font-weight: bold;
   }
+
+   /* attack animations */
+  @keyframes lungeForward {
+    0% { transform: translateX(0); }
+    40% { transform: translateX(var(--lunge-x, 24px)); }
+    100% { transform: translateX(0); }
+  }
+  @keyframes hitFlash {
+    0%, 100% { opacity: 1; filter: brightness(1); }
+    25% { opacity: 0.3; filter: brightness(2.4); }
+    50% { opacity: 1; filter: brightness(1); }
+    75% { opacity: 0.3; filter: brightness(2.4); }
+  }
+  @keyframes faintDrop {
+    to { transform: translateY(60px); opacity: 0; }
+  }
+  .anim-attacker { animation: lungeForward 0.35s ease; }
+  .anim-hit { animation: hitFlash 0.35s ease; }
+  .anim-faint { animation: faintDrop 0.6s ease forwards; }
     </style>
 </head>
 
@@ -1026,6 +1045,17 @@ function resolveTurnOrder(playerPokemon, playerMove, enemyPokemon, enemyMove) {
   return Math.random() < 0.5 ? "player" : "enemy";
 }
 
+function playAnimation(el, className) {
+  return new Promise((resolve) => {
+    const handleEnd = () => {
+      el.classList.remove(className);
+      el.removeEventListener("animationend", handleEnd);
+      resolve();
+    };
+    el.addEventListener("animationend", handleEnd, { once: true });
+    el.classList.add(className);
+  });
+}
 
 async function runTurn(playerAction) {
   state.inputLocked = true;
@@ -1110,7 +1140,7 @@ function finishTurn() {
 async function executeMove(attacker, defender, move, attackerSlot, defenderSlot, isPlayerAttacker) {
   setDialogue(`${attacker.name} used ${move.name}!`);
   await wait(500);
- // await playAnimation(attackerSlot, "anim-attacker");
+  await playAnimation(attackerSlot, "anim-attacker");
 
   const result = calculateDamage(attacker, defender, move);
 
@@ -1126,7 +1156,7 @@ async function executeMove(attacker, defender, move, attackerSlot, defenderSlot,
   }
 
   applyDamage(defender, result.damage);
-  // await playAnimation(defenderSlot, "anim-hit");
+  await playAnimation(defenderSlot, "anim-hit");
   renderBattlers();
 
   if (result.isCritical) {
