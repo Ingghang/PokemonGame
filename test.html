@@ -892,6 +892,14 @@ function getActivePokemon(team, activeIndex) {
   return team[activeIndex];
 }
 
+function isTeamDefeated(team) {
+  return team.every((pokemon) => pokemon.fainted);
+}
+
+function getNextHealthyIndex(team) {
+  return team.findIndex((pokemon) => !pokemon.fainted);
+}
+
 function clamp (value, min, max) {return  Math.max(min, Math.min(max, value));}
 function randomInt  (min, max) {return Math.floor(Math.random() * (max - min + 1)) + min;}
 function pickRandom (array) { return  array[randomInt(0, array.length - 1)];}
@@ -983,6 +991,37 @@ function renderMoveButtons(onSelectMove) {
   el.fightPanel.appendChild(backButton);
 }
 
+function renderPokemonRoster(onSelectSwitch, forcedSwitch) {
+  el.pokemonPanel.innerHTML = "";
+
+  state.playerTeam.forEach((pokemon, index) => {
+    const card = document.createElement("button");
+    card.className = "actionBtn rosterCard";
+    const isActive = index === state.playerActive;
+    card.disabled = pokemon.fainted || isActive;
+
+    const percent = (pokemon.currentHp / pokemon.maxHp) * 100;
+    card.innerHTML = `
+      <img src="${spriteUrl(pokemon.id, false)}" alt="">
+      <span class="rosterInfo">
+        ${pokemon.name}${isActive ? " (active)" : ""}${pokemon.fainted ? " (fainted)" : ""}
+        <span class="miniHpBg"><span class="miniHpFill" style="width:${percent}%; background:${hpBarColor(pokemon)}"></span></span>
+      </span>
+    `;
+    card.addEventListener("click", () => onSelectSwitch(index));
+    el.pokemonPanel.appendChild(card);
+  });
+
+  if (!forcedSwitch) {
+    const backButton = document.createElement("button");
+    backButton.className = "actionBtn";
+    backButton.textContent = "Back";
+    backButton.addEventListener("click", backToActionPanel);
+    el.pokemonPanel.appendChild(backButton);
+  }
+}
+
+
 function backToActionPanel() {
   showPanel(el.actionPanel);
   setDialogue("What will you do?");
@@ -1024,16 +1063,42 @@ el.btnItem.addEventListener("click", () => {
 });
 
 el.btnItemBack.addEventListener("click", backToActionPanel);
+el.btnPotion.addEventListener("click", () => handlePlayerItem());
 
 el.btnRun.addEventListener("click", () => {
   setDialogue("You can't run from a Pokémon battle!");
 });
 
-
 async function handlePlayerAttack(move) {
   if (state.inputLocked) return;
   await runTurn({ type: "attack", move });
 }
+
+async function handlePlayerSwitch(index) {
+  if (state.inputLocked) return;
+  if (index === state.playerActive || state.playerTeam[index].fainted) return;
+  const wasForced = getActivePokemon(state.playerTeam, state.playerActive).fainted;
+  state.playerActive = index;
+  renderBattlers();
+  if (wasForced) {
+    // A forced switch (after fainting) does not give the enemy a free hit;
+    // the enemy already acted in the turn that caused the faint.
+    backToActionPanel();
+  } else {
+    await runTurn({ type: "switch" });
+  }
+}
+async function handlePlayerAttack(move) {
+  if (state.inputLocked) return;
+  await runTurn({ type: "attack", move });
+}
+
+async function handlePlayerItem() {
+  if (state.inputLocked || state.potionCount === 0) return;
+  await runTurn({ type: "item" });
+}
+
+
 
 function resolveTurnOrder(playerPokemon, playerMove, enemyPokemon, enemyMove) {
   if (playerMove.priority !== enemyMove.priority) {
@@ -1099,6 +1164,35 @@ async function runTurn(playerAction) {
   finishTurn();
 }
 
+function renderPokemonRoster(onSelectSwitch, forcedSwitch) {
+  el.pokemonPanel.innerHTML = "";
+
+  state.playerTeam.forEach((pokemon, index) => {
+    const card = document.createElement("button");
+    card.className = "actionBtn rosterCard";
+    const isActive = index === state.playerActive;
+    card.disabled = pokemon.fainted || isActive;
+
+    const percent = (pokemon.currentHp / pokemon.maxHp) * 100;
+    card.innerHTML = `
+      <img src="${spriteUrl(pokemon.id, false)}" alt="">
+      <span class="rosterInfo">
+        ${pokemon.name}${isActive ? " (active)" : ""}${pokemon.fainted ? " (fainted)" : ""}
+        <span class="miniHpBg"><span class="miniHpFill" style="width:${percent}%; background:${hpBarColor(pokemon)}"></span></span>
+      </span>
+    `;
+    card.addEventListener("click", () => onSelectSwitch(index));
+    el.pokemonPanel.appendChild(card);
+  });
+
+  if (!forcedSwitch) {
+    const backButton = document.createElement("button");
+    backButton.className = "actionBtn";
+    backButton.textContent = "Back";
+    backButton.addEventListener("click", backToActionPanel);
+    el.pokemonPanel.appendChild(backButton);
+  }
+}
 // Returns true if the battle ended as a result of this faint.
 async function handleFaintIfNeeded(pokemon, isPlayerPokemon) {
   if (!pokemon.fainted) return false;
@@ -1130,7 +1224,23 @@ async function handleFaintIfNeeded(pokemon, isPlayerPokemon) {
   }
   return false;
 }
+function endBattle(playerWon) {
+  state.battleOver = true;
+  setDialogue(playerWon ? "You won the battle!" : "You lost the battle...");
+  [el.actionPanel, el.fightPanel, el.pokemonPanel, el.itemPanel].forEach((p) => p.classList.remove("visible"));
+  el.dialoguePanel.style.width = "100%";
 
+  const restartButton = document.createElement("button");
+  restartButton.className = "startBattleBtn";
+  restartButton.textContent = "Back to Team Select";
+  restartButton.style.margin = "12px auto 0";
+  restartButton.addEventListener("click", () => {
+    document.getElementById("battleScreen").classList.remove("active");
+    document.getElementById("selectionScreen").classList.add("active");
+    restartButton.remove();
+  });
+  el.dialoguePanel.appendChild(restartButton);
+}
 function finishTurn() {
   renderBattlers();
   state.inputLocked = false;
