@@ -955,7 +955,7 @@ function startBattle() {
   document.getElementById("battleScreen").classList.add("active");
   document.getElementById("mainOST").play();
   renderBattlers();
-  
+  backToActionPanel();
 }
 
 function showPanel(panelToShow) {
@@ -1237,6 +1237,8 @@ function endBattle(playerWon) {
   restartButton.addEventListener("click", () => {
     document.getElementById("battleScreen").classList.remove("active");
     document.getElementById("selectionScreen").classList.add("active");
+    document.getElementById("mainOST").pause();
+    document.getElementById("mainOST").currentTime=0;
     restartButton.remove();
   });
   el.dialoguePanel.appendChild(restartButton);
