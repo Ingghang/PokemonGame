@@ -17,6 +17,9 @@
             --btn-red: #d64545;
             --btn-red-dark: #a83232;
         }
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
         body{
             display: flex;
             flex-direction: column;
@@ -25,6 +28,8 @@
             background:#0F172A;
             color: black;
             line-height:1.6;
+            margin: 0;
+            overflow-x: hidden;
         }
 /* ---------- HEADER ---------- */
 
@@ -123,7 +128,7 @@
             align-items: center;
             /* min-height: 100vh; */
             margin: 0;
-           
+            width: 100%;
         } 
 
         .mainBorder {
@@ -145,10 +150,10 @@
             position: relative;
             background: url("img/bbg.png");
             background-repeat: no-repeat;
-            background-size: cover;
+            background-size: 100% 100%;
             border-radius: 8px;
             overflow: hidden;
-            min-height: 0;
+            min-height: 250px;
         }
           .pokemonSlot {
             height: 60%;
@@ -164,7 +169,7 @@
         }
 
         .pokemon1 { top: 50%; left: 0%; }
-        .pokemon2 { top: 5%; right: 0%; }
+        .pokemon2 { top: 13%; right: 0%; }
 
         .hpCard {
             display: flex;
@@ -241,6 +246,7 @@
         
         button{
             cursor: pointer;
+            touch-action: manipulation;
         }
         button.actionBtn {
             border: 5px solid black;
@@ -267,8 +273,21 @@
   .startBattleBtn:hover:not(:disabled) { background: var(--btn-red-dark); }
   .startBattleBtn:disabled { background: #b7bec7; cursor: not-allowed; }
 
-        .moveBtn { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; }
+        .moveBtn { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; padding: 4px; text-align: center; }
         .moveBtn .moveMeta { font-size: 0.65rem; font-weight: normal; opacity: 0.85; }
+
+        /* roster cards (Pokemon switch panel) */
+        .rosterCard {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+            padding: 6px 10px;
+        }
+        .rosterCard img { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
+        .rosterInfo { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; flex: 1; min-width: 0; }
+        .miniHpBg { display: block; width: 100%; height: 6px; background: #222; border-radius: 6px; overflow: hidden; }
+        .miniHpFill { display: block; height: 100%; }
 
         .footer{
             color:#F8FAFC;
@@ -277,6 +296,7 @@
             display: none;
             width: 100%;
             max-width: 1000px; 
+            padding: 0 10px;
         }
     .screen.active { display: block; }
         .selectionPanel {
@@ -301,7 +321,7 @@
     text-align: center;
     transition: transform 0.15s ease, border-color 0.15s ease;
   }
-  .pokemonCard img { width: 90px; height: 90px; image-rendering: pixelated; }
+  .pokemonCard img { width: 90px; height: 90px; image-rendering: pixelated; max-width: 100%; }
   .pokemonCard .cardName { font-weight: bold; color: #33475b; margin: 4px 0; }
   .pokemonCard:hover { transform: translateY(-3px); }
   .pokemonCard.selected {
@@ -337,6 +357,74 @@
   .anim-attacker { animation: lungeForward 0.35s ease; }
   .anim-hit { animation: hitFlash 0.35s ease; }
   .anim-faint { animation: faintDrop 0.6s ease forwards; }
+
+  /* ---------- MOBILE BATTLE UI ---------- */
+  @media (max-width: 768px) {
+    .mainBorder {
+      aspect-ratio: unset;
+      min-height: 560px;
+      padding: 8px;
+      border-radius: 14px;
+    }
+
+    .hpCard {
+      width: min(78%, 240px);
+      padding: 6px 8px;
+      border-width: 3px;
+      border-radius: 10px;
+      gap: 2px;
+    }
+    .hpCard p.nameRow { font-size: 0.85rem; }
+    .hpCard .hpText { font-size: 0.65rem; }
+
+    .pokemonSlot.pokemon1 { width: 55%; height: 48%; }
+    .pokemonSlot.pokemon2 { width: 50%; height: 44%; }
+
+    .bottom {
+      flex-direction: column;
+      height: auto;
+      min-height: unset;
+      border-width: 3px;
+    }
+
+    .dialogueBorder {
+      width: 100%;
+      min-height: 62px;
+      font-size: 0.95rem;
+      padding: 8px;
+      border-width: 4px;
+    }
+
+    .panel {
+      width: 100%;
+      height: auto;
+      min-height: 140px;
+      padding: 8px;
+      gap: 6px;
+    }
+
+    button.actionBtn {
+      border-width: 3px;
+      padding: 6px 4px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+    .moveBtn .moveMeta { font-size: 0.55rem; }
+
+    .rosterCard img { width: 30px; height: 30px; }
+    .rosterInfo { font-size: 0.72rem; }
+
+    .selectionPanel { padding: 12px; border-radius: 12px; }
+    .pokemonGrid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+    .pokemonCard img { width: 64px; height: 64px; }
+    .pokemonCard .cardName { font-size: 0.85rem; }
+    .typeBadge { font-size: 0.6rem; padding: 1px 6px; }
+  }
+
+  @media (max-width: 400px) {
+    .hpCard { width: min(85%, 210px); }
+    .dialogueBorder { font-size: 0.85rem; }
+  }
     </style>
 </head>
 
@@ -472,7 +560,8 @@ const POKEMON_TEMPLATES =  [
           "power": 40,
           "accuracy": 100,
           "pp": 10,
-          "priority": 3
+          "priority": 3,
+          "effect": { "kind": "flinch", "chance": 100, "firstTurnOnly": true }
         },
         {
           "name": "Iron Tail",
@@ -499,7 +588,8 @@ const POKEMON_TEMPLATES =  [
           "power": 120,
           "accuracy": 100,
           "pp": 15,
-          "priority": 0
+          "priority": 0,
+          "effect": { "kind": "recoil", "fraction": 0.33 }
         }
       ]
     },
@@ -508,12 +598,12 @@ const POKEMON_TEMPLATES =  [
     "name": "Gardevoir",
     "types": ["Psychic", "Fairy"],
     "stats": {
-      "hp": 68,
+      "hp": 143,
       "attack": 65,
-      "defense": 65,
-      "spAttack": 125,
-      "spDefense": 115,
-      "speed": 80
+      "defense": 85,
+      "spAttack": 194,
+      "spDefense": 167,
+      "speed": 120
     },
     "moves": [
       {
@@ -643,7 +733,8 @@ const POKEMON_TEMPLATES =  [
           "power": 0,
           "accuracy": 100,
           "pp": 20,
-          "priority": 0
+          "priority": 0,
+          "effect": { "kind": "statChange", "target": "self", "stat": "spAttack", "stages": 2 }
         },
         {
           "name": "Dazzling Gleam",
@@ -656,6 +747,57 @@ const POKEMON_TEMPLATES =  [
         }
       ]
     },
+     {
+    "id": 254,
+    "name": "Sceptile",
+    "types": ["Grass"],
+    "stats": {
+      "hp": 145,
+      "attack": 85,
+      "defense": 75,
+      "spAttack": 145,
+      "spDefense": 105,
+      "speed": 145
+    },
+    "moves": [
+      {
+        "name": "Leaf Blade",
+        "type": "Grass",
+        "category": "Physical",
+        "power": 90,
+        "accuracy": 100,
+        "pp": 15,
+        "priority": 0
+      },
+      {
+        "name": "Energy Ball",
+        "type": "Grass",
+        "category": "Special",
+        "power": 90,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0
+      },
+      {
+        "name": "Dragon Pulse",
+        "type": "Dragon",
+        "category": "Special",
+        "power": 85,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0
+      },
+      {
+        "name": "Focus Blast",
+        "type": "Fighting",
+        "category": "Special",
+        "power": 120,
+        "accuracy": 70,
+        "pp": 5,
+        "priority": 0
+      }
+    ]
+  },
     {
       "id": 658,
       "name": "Greninja",
@@ -707,6 +849,213 @@ const POKEMON_TEMPLATES =  [
         }
       ]
     },
+      {
+    "id": 445,
+    "name": "Garchomp",
+    "types": ["Dragon", "Ground"],
+    "stats": {
+      "hp": 183,
+      "attack": 170,
+      "defense": 115,
+      "spAttack": 85,
+      "spDefense": 105,
+      "speed": 154
+    },
+    "moves": [
+      {
+        "name": "Earthquake",
+        "type": "Ground",
+        "category": "Physical",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0
+      },
+      {
+        "name": "Dragon Claw",
+        "type": "Dragon",
+        "category": "Physical",
+        "power": 80,
+        "accuracy": 100,
+        "pp": 15,
+        "priority": 0
+      },
+      {
+        "name": "Stone Edge",
+        "type": "Rock",
+        "category": "Physical",
+        "power": 100,
+        "accuracy": 80,
+        "pp": 5,
+        "priority": 0
+      },
+      {
+          "name": "Swords Dance",
+          "type": "Normal",
+          "category": "Status",
+          "power": 0,
+          "accuracy": 100,
+          "pp": 20,
+          "priority": 0,
+          "effect": { "kind": "statChange", "target": "self", "stat": "attack", "stages": 2 }
+        }
+    ]
+  },
+
+  {
+    "id": 133,
+    "name": "Eevee",
+    "types": ["Normal"],
+    "stats": {
+      "hp": 130,
+      "attack": 75,
+      "defense": 70,
+      "spAttack": 65,
+      "spDefense": 85,
+      "speed": 80
+    },
+    "moves": [
+      {
+        "name": "Quick Attack",
+        "type": "Normal",
+        "category": "Physical",
+        "power": 40,
+        "accuracy": 100,
+        "pp": 30,
+        "priority": 1
+      },
+      {
+        "name": "Bite",
+        "type": "Dark",
+        "category": "Physical",
+        "power": 60,
+        "accuracy": 100,
+        "pp": 25,
+        "priority": 0
+      },
+      {
+        "name": "Swift",
+        "type": "Normal",
+        "category": "Special",
+        "power": 60,
+        "accuracy": 100,
+        "pp": 20,
+        "priority": 0
+      },
+      {
+        "name": "Double-Edge",
+        "type": "Normal",
+        "category": "Physical",
+        "power": 120,
+        "accuracy": 100,
+        "pp": 15,
+        "priority": 0
+      }
+    ]
+  },
+  {
+    "id": 727,
+    "name": "Incineroar",
+    "types": ["Fire", "Dark"],
+    "stats": {
+      "hp": 175,
+      "attack": 160,
+      "defense": 115,
+      "spAttack": 75,
+      "spDefense": 110,
+      "speed": 85
+    },
+    "moves": [
+      {
+        "name": "Flare Blitz",
+        "type": "Fire",
+        "category": "Physical",
+        "power": 120,
+        "accuracy": 100,
+        "pp": 15,
+        "priority": 0,
+        "effect": { "kind": "recoil", "fraction": 0.33 }
+      },
+      {
+        "name": "Darkest Lariat",
+        "type": "Dark",
+        "category": "Physical",
+        "power": 85,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0
+      },
+      {
+        "name": "Cross Chop",
+        "type": "Fighting",
+        "category": "Physical",
+        "power": 100,
+        "accuracy": 80,
+        "pp": 5,
+        "priority": 0
+      },
+      {
+        "name": "Earthquake",
+        "type": "Ground",
+        "category": "Physical",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0
+      }
+    ]
+  },
+  {
+    "id": 248,
+    "name": "Tyranitar",
+    "types": ["Rock", "Dark"],
+    "stats": {
+      "hp": 180,
+      "attack": 165,
+      "defense": 145,
+      "spAttack": 95,
+      "spDefense": 140,
+      "speed": 95
+    },
+    "moves": [
+      {
+        "name": "Stone Edge",
+        "type": "Rock",
+        "category": "Physical",
+        "power": 100,
+        "accuracy": 80,
+        "pp": 5,
+        "priority": 0
+      },
+      {
+        "name": "Crunch",
+        "type": "Dark",
+        "category": "Physical",
+        "power": 80,
+        "accuracy": 100,
+        "pp": 15,
+        "priority": 0
+      },
+      {
+        "name": "Earthquake",
+        "type": "Ground",
+        "category": "Physical",
+        "power": 100,
+        "accuracy": 100,
+        "pp": 10,
+        "priority": 0
+      },
+      {
+        "name": "Dragon Claw",
+        "type": "Dragon",
+        "category": "Physical",
+        "power": 80,
+        "accuracy": 100,
+        "pp": 15,
+        "priority": 0
+      }
+    ]
+  },
     {
       "id": 448,
       "name": "Lucario",
@@ -727,7 +1076,8 @@ const POKEMON_TEMPLATES =  [
           "power": 0,
           "accuracy": 100,
           "pp": 20,
-          "priority": 0
+          "priority": 0,
+          "effect": { "kind": "statChange", "target": "self", "stat": "attack", "stages": 2 }
         },
         {
           "name": "Close Combat",
@@ -745,7 +1095,8 @@ const POKEMON_TEMPLATES =  [
           "power": 90,
           "accuracy": 90,
           "pp": 10,
-          "priority": 0
+          "priority": 0,
+          "effect": { "kind": "statChange", "target": "self", "stat": "attack", "stages": 1, "chance": 20 }
         },
         {
           "name": "Extreme Speed",
@@ -767,6 +1118,38 @@ const TYPE_COLORS = {
   Rock: "#B8A038", Ghost: "#705898", Dragon: "#7038F8", Dark: "#705848",
   Steel: "#B8B8D0", Fairy: "#EE99AC"
 };
+
+// Standard attacking-type -> defending-type multiplier chart. Anything not
+// listed defaults to 1x (neutral) in getTypeEffectiveness().
+const TYPE_CHART = {
+  Normal:   { Rock: 0.5, Ghost: 0, Steel: 0.5 },
+  Fire:     { Fire: 0.5, Water: 0.5, Grass: 2, Ice: 2, Bug: 2, Rock: 0.5, Dragon: 0.5, Steel: 2 },
+  Water:    { Fire: 2, Water: 0.5, Grass: 0.5, Ground: 2, Rock: 2, Dragon: 0.5 },
+  Electric: { Water: 2, Electric: 0.5, Grass: 0.5, Ground: 0, Flying: 2, Dragon: 0.5 },
+  Grass:    { Fire: 0.5, Water: 2, Grass: 0.5, Poison: 0.5, Ground: 2, Flying: 0.5, Bug: 0.5, Rock: 2, Dragon: 0.5, Steel: 0.5 },
+  Ice:      { Fire: 0.5, Water: 0.5, Grass: 2, Ice: 0.5, Ground: 2, Flying: 2, Dragon: 2, Steel: 0.5 },
+  Fighting: { Normal: 2, Ice: 2, Poison: 0.5, Flying: 0.5, Psychic: 0.5, Bug: 0.5, Rock: 2, Ghost: 0, Dark: 2, Steel: 2, Fairy: 0.5 },
+  Poison:   { Grass: 2, Poison: 0.5, Ground: 0.5, Rock: 0.5, Ghost: 0.5, Steel: 0, Fairy: 2 },
+  Ground:   { Fire: 2, Electric: 2, Grass: 0.5, Poison: 2, Flying: 0, Bug: 0.5, Rock: 2, Steel: 2 },
+  Flying:   { Electric: 0.5, Grass: 2, Fighting: 2, Bug: 2, Rock: 0.5, Steel: 0.5 },
+  Psychic:  { Fighting: 2, Poison: 2, Psychic: 0.5, Dark: 0, Steel: 0.5 },
+  Bug:      { Fire: 0.5, Grass: 2, Fighting: 0.5, Poison: 0.5, Flying: 0.5, Psychic: 2, Ghost: 0.5, Dark: 2, Steel: 0.5, Fairy: 0.5 },
+  Rock:     { Fire: 2, Ice: 2, Fighting: 0.5, Ground: 0.5, Flying: 2, Bug: 2, Steel: 0.5 },
+  Ghost:    { Normal: 0, Psychic: 2, Ghost: 2, Dark: 0.5 },
+  Dragon:   { Dragon: 2, Steel: 0.5, Fairy: 0 },
+  Dark:     { Fighting: 0.5, Psychic: 2, Ghost: 2, Dark: 0.5, Fairy: 0.5 },
+  Steel:    { Fire: 0.5, Water: 0.5, Electric: 0.5, Ice: 2, Rock: 2, Steel: 0.5, Fairy: 2 },
+  Fairy:    { Fire: 0.5, Fighting: 2, Poison: 0.5, Dragon: 2, Dark: 2, Steel: 0.5 }
+};
+
+function getTypeEffectiveness(moveType, defenderTypes) {
+  const chart = TYPE_CHART[moveType];
+  if (!chart) return 1;
+  return defenderTypes.reduce((multiplier, defType) => {
+    const m = defType in chart ? chart[defType] : 1;
+    return multiplier * m;
+  }, 1);
+}
 
 const el = {
   p1Sprite: document.getElementById("p1Sprite"),
@@ -868,7 +1251,12 @@ function createBattlePokemon(template) {
     ...clone,
     currentHp: clone.stats.hp,
     maxHp: clone.stats.hp,
-    fainted: false
+    fainted: false,
+    // stat stages range -6..+6, one per modifiable stat (Pokemon stat-stage system)
+    statStages: { attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 },
+    flinched: false,
+    turnsOnField: 0,
+    _justSwitched: true
   };
 }
 
@@ -903,6 +1291,41 @@ function getNextHealthyIndex(team) {
 function clamp (value, min, max) {return  Math.max(min, Math.min(max, value));}
 function randomInt  (min, max) {return Math.floor(Math.random() * (max - min + 1)) + min;}
 function pickRandom (array) { return  array[randomInt(0, array.length - 1)];}
+
+// Converts a -6..+6 stat stage into the classic Pokemon multiplier.
+function statStageMultiplier(stage) {
+  stage = clamp(stage, -6, 6);
+  return stage >= 0 ? (2 + stage) / 2 : 2 / (2 - stage);
+}
+
+function getEffectiveStat(pokemon, statKey) {
+  const base = pokemon.stats[statKey];
+  const stage = (pokemon.statStages && pokemon.statStages[statKey]) || 0;
+  return base * statStageMultiplier(stage);
+}
+
+function statLabel(stat) {
+  const labels = { attack: "Attack", defense: "Defense", spAttack: "Sp. Atk", spDefense: "Sp. Def", speed: "Speed" };
+  return labels[stat] || stat;
+}
+
+function moveEffectLabel(move) {
+  const effect = move.effect;
+  if (!effect) return "";
+  if (effect.kind === "statChange") {
+    const sign = effect.stages > 0 ? "+" : "";
+    const chanceText = effect.chance && effect.chance < 100 ? ` (${effect.chance}%)` : "";
+    const who = effect.target === "self" ? "" : " foe";
+    return ` · ${sign}${effect.stages}${who} ${statLabel(effect.stat)}${chanceText}`;
+  }
+  if (effect.kind === "recoil") {
+    return ` · Recoil ${Math.round(effect.fraction * 100)}%`;
+  }
+  if (effect.kind === "flinch") {
+    return " · May flinch";
+  }
+  return "";
+}
 
 const state = {
   playerTeam: [],
@@ -980,7 +1403,7 @@ function renderMoveButtons(onSelectMove) {
     const button = document.createElement("button");
     button.className = "actionBtn moveBtn";
     button.style.backgroundColor = TYPE_COLORS[move.type] || "var(--btn-red)";
-    button.innerHTML = `${move.name}<span class="moveMeta">${move.type} · ${move.category}</span>`;
+    button.innerHTML = `${move.name}<span class="moveMeta">${move.type} · ${move.category}${moveEffectLabel(move)}</span>`;
     button.addEventListener("click", () => onSelectMove(move)); //onSelectMove is a call back function
     el.fightPanel.appendChild(button);
   });
@@ -1023,6 +1446,7 @@ function renderPokemonRoster(onSelectSwitch, forcedSwitch) {
 
 
 function backToActionPanel() {
+  if (state.battleOver) return;
   showPanel(el.actionPanel);
   setDialogue("What will you do?");
 }
@@ -1045,18 +1469,47 @@ function healPokemon(pokemon, amount) {
   pokemon.currentHp = clamp(pokemon.currentHp + amount, 0, pokemon.maxHp);
 }
 
+// Applies a move's secondary effect (stat change or flinch). Returns a
+// small outcome object the caller can use to build a dialogue message,
+// or null if nothing happened (effect missed its chance / no effect defined).
+function applyMoveEffect(attacker, defender, move) {
+  const effect = move.effect;
+  if (!effect) return null;
+
+  if (effect.kind === "statChange") {
+    const target = effect.target === "self" ? attacker : defender;
+    const chance = effect.chance ?? 100;
+    if (Math.random() * 100 > chance) return null;
+    const before = target.statStages[effect.stat];
+    target.statStages[effect.stat] = clamp(before + effect.stages, -6, 6);
+    const changed = target.statStages[effect.stat] !== before;
+    return { kind: "statChange", target, stat: effect.stat, stages: effect.stages, changed };
+  }
+
+  if (effect.kind === "flinch") {
+    const chance = effect.chance ?? 100;
+    if (Math.random() * 100 > chance) return null;
+    defender.flinched = true;
+    return { kind: "flinch" };
+  }
+
+  return null;
+}
+
 el.btnFight.addEventListener("click", () => {
-  console.log("test")
+  if (state.battleOver || state.inputLocked) return;
   showPanel(el.fightPanel);
   renderMoveButtons(handlePlayerAttack);
 });
 
 el.btnPokemon.addEventListener("click", () => {
+  if (state.battleOver || state.inputLocked) return;
   showPanel(el.pokemonPanel);
   renderPokemonRoster(handlePlayerSwitch, false);
 });
 
 el.btnItem.addEventListener("click", () => {
+  if (state.battleOver || state.inputLocked) return;
   showPanel(el.itemPanel);
   el.btnPotion.textContent = `Potion x${state.potionCount}`;
   el.btnPotion.disabled = state.potionCount === 0;
@@ -1066,19 +1519,29 @@ el.btnItemBack.addEventListener("click", backToActionPanel);
 el.btnPotion.addEventListener("click", () => handlePlayerItem());
 
 el.btnRun.addEventListener("click", () => {
+  if (state.battleOver || state.inputLocked) return;
   setDialogue("You can't run from a Pokémon battle!");
 });
 
-async function handlePlayerAttack(move) {
-  if (state.inputLocked) return;
-  await runTurn({ type: "attack", move });
-}
 
 async function handlePlayerSwitch(index) {
+  if (state.battleOver) return;
   if (state.inputLocked) return;
   if (index === state.playerActive || state.playerTeam[index].fainted) return;
-  const wasForced = getActivePokemon(state.playerTeam, state.playerActive).fainted;
+
+  const outgoing = getActivePokemon(state.playerTeam, state.playerActive);
+  const wasForced = outgoing.fainted;
+
+  // Stat stages reset whenever a Pokemon leaves the field.
+  outgoing.statStages = { attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 };
+  outgoing.flinched = false;
+
   state.playerActive = index;
+  const incoming = state.playerTeam[index];
+  incoming.turnsOnField = 0;
+  incoming._justSwitched = true;
+  incoming.flinched = false;
+
   renderBattlers();
   if (wasForced) {
     // A forced switch (after fainting) does not give the enemy a free hit;
@@ -1089,12 +1552,12 @@ async function handlePlayerSwitch(index) {
   }
 }
 async function handlePlayerAttack(move) {
-  if (state.inputLocked) return;
+  if (state.battleOver || state.inputLocked) return;
   await runTurn({ type: "attack", move });
 }
 
 async function handlePlayerItem() {
-  if (state.inputLocked || state.potionCount === 0) return;
+  if (state.battleOver || state.inputLocked || state.potionCount === 0) return;
   await runTurn({ type: "item" });
 }
 
@@ -1104,8 +1567,10 @@ function resolveTurnOrder(playerPokemon, playerMove, enemyPokemon, enemyMove) {
   if (playerMove.priority !== enemyMove.priority) {
     return playerMove.priority > enemyMove.priority ? "player" : "enemy";
   }
-  if (playerPokemon.stats.speed !== enemyPokemon.stats.speed) {
-    return playerPokemon.stats.speed > enemyPokemon.stats.speed ? "player" : "enemy";
+  const playerSpeed = getEffectiveStat(playerPokemon, "speed");
+  const enemySpeed = getEffectiveStat(enemyPokemon, "speed");
+  if (playerSpeed !== enemySpeed) {
+    return playerSpeed > enemySpeed ? "player" : "enemy";
   }
   return Math.random() < 0.5 ? "player" : "enemy";
 }
@@ -1123,6 +1588,7 @@ function playAnimation(el, className) {
 }
 
 async function runTurn(playerAction) {
+  if (state.battleOver) return;
   state.inputLocked = true;
   setPanelsEnabled(false);
   showPanel(el.actionPanel);
@@ -1144,88 +1610,97 @@ async function runTurn(playerAction) {
     // Attack: whoever is faster (respecting move priority) goes first.
     const order = resolveTurnOrder(playerPokemon, playerAction.move, enemyPokemon, enemyMove);
     if (order === "player") {
-      await executeMove(playerPokemon, enemyPokemon, playerAction.move, el.p1Slot, el.p2Slot, true);
-      if (await handleFaintIfNeeded(enemyPokemon, false)) { finishTurn(); return; }
-      await executeMove(enemyPokemon, playerPokemon, enemyMove, el.p2Slot, el.p1Slot, false);
-      if (await handleFaintIfNeeded(playerPokemon, true)) { finishTurn(); return; }
+      let status = await performMoveAndResolveFaints(playerPokemon, enemyPokemon, playerAction.move, el.p1Slot, el.p2Slot, true);
+      if (status !== "none") {
+        if (status === "enemyFainted") finishTurn();
+        return;
+      }
+      status = await performMoveAndResolveFaints(enemyPokemon, playerPokemon, enemyMove, el.p2Slot, el.p1Slot, false);
+      if (status !== "none") {
+        if (status === "enemyFainted") finishTurn();
+        return;
+      }
     } else {
-      await executeMove(enemyPokemon, playerPokemon, enemyMove, el.p2Slot, el.p1Slot, false);
-      if (await handleFaintIfNeeded(playerPokemon, true)) { finishTurn(); return; }
-      await executeMove(playerPokemon, enemyPokemon, playerAction.move, el.p1Slot, el.p2Slot, true);
-      if (await handleFaintIfNeeded(enemyPokemon, false)) { finishTurn(); return; }
+      let status = await performMoveAndResolveFaints(enemyPokemon, playerPokemon, enemyMove, el.p2Slot, el.p1Slot, false);
+      if (status !== "none") {
+        if (status === "enemyFainted") finishTurn();
+        return;
+      }
+      status = await performMoveAndResolveFaints(playerPokemon, enemyPokemon, playerAction.move, el.p1Slot, el.p2Slot, true);
+      if (status !== "none") {
+        if (status === "enemyFainted") finishTurn();
+        return;
+      }
     }
     finishTurn();
     return;
   }
 
   // Non-attack player actions still give the opponent a turn.
-  await executeMove(enemyPokemon, playerPokemon, enemyMove, el.p2Slot, el.p1Slot, false);
-  if (await handleFaintIfNeeded(playerPokemon, true)) { finishTurn(); return; }
+  const status = await performMoveAndResolveFaints(enemyPokemon, playerPokemon, enemyMove, el.p2Slot, el.p1Slot, false);
+  if (status !== "none") {
+        if (status === "enemyFainted") finishTurn();
+        return;
+      }
   finishTurn();
 }
 
-function renderPokemonRoster(onSelectSwitch, forcedSwitch) {
-  el.pokemonPanel.innerHTML = "";
+// Executes one Pokemon's move and then checks BOTH the defender (the
+// move's target) and the attacker (who can faint from recoil) for fainting.
+// Returns "none" to continue the turn normally, "battleOver" if a team was
+// wiped out, or "forcedSwitch" if the player must pick a new Pokemon.
+async function performMoveAndResolveFaints(attacker, defender, move, attackerSlot, defenderSlot, attackerIsPlayer) {
+  await executeMove(attacker, defender, move, attackerSlot, defenderSlot, attackerIsPlayer);
 
-  state.playerTeam.forEach((pokemon, index) => {
-    const card = document.createElement("button");
-    card.className = "actionBtn rosterCard";
-    const isActive = index === state.playerActive;
-    card.disabled = pokemon.fainted || isActive;
+  let status = await handleFaintIfNeeded(defender, !attackerIsPlayer);
+  if (status !== "none") return status;
 
-    const percent = (pokemon.currentHp / pokemon.maxHp) * 100;
-    card.innerHTML = `
-      <img src="${spriteUrl(pokemon.id, false)}" alt="">
-      <span class="rosterInfo">
-        ${pokemon.name}${isActive ? " (active)" : ""}${pokemon.fainted ? " (fainted)" : ""}
-        <span class="miniHpBg"><span class="miniHpFill" style="width:${percent}%; background:${hpBarColor(pokemon)}"></span></span>
-      </span>
-    `;
-    card.addEventListener("click", () => onSelectSwitch(index));
-    el.pokemonPanel.appendChild(card);
-  });
+  status = await handleFaintIfNeeded(attacker, attackerIsPlayer);
+  if (status !== "none") return status;
 
-  if (!forcedSwitch) {
-    const backButton = document.createElement("button");
-    backButton.className = "actionBtn";
-    backButton.textContent = "Back";
-    backButton.addEventListener("click", backToActionPanel);
-    el.pokemonPanel.appendChild(backButton);
-  }
+  return "none";
 }
-// Returns true if the battle ended as a result of this faint.
+
+// Returns "none" if nothing needs to interrupt the turn, "battleOver" if the
+// battle just ended, or "forcedSwitch" if the player must choose next.
 async function handleFaintIfNeeded(pokemon, isPlayerPokemon) {
-  if (!pokemon.fainted) return false;
+  if (!pokemon.fainted) return "none";
 
   const slot = isPlayerPokemon ? el.p1Slot : el.p2Slot;
   setDialogue(`${pokemon.name} fainted!`);
-  
-
-  await wait(400);
- 
+  await playAnimation(slot, "anim-faint");
 
   const team = isPlayerPokemon ? state.playerTeam : state.enemyTeam;
   if (isTeamDefeated(team)) {
     endBattle(!isPlayerPokemon);
-    return true;
+    return "battleOver";
   }
 
   if (isPlayerPokemon) {
     setDialogue(`${pokemon.name} fainted! Choose your next Pokémon.`);
     state.inputLocked = false;
     setPanelsEnabled(true);
+    renderPokemonRoster(handlePlayerSwitch, true);
     showPanel(el.pokemonPanel);
-    
+    return "forcedSwitch";
   } else {
     state.enemyActive = getNextHealthyIndex(state.enemyTeam);
+    const incoming = state.enemyTeam[state.enemyActive];
+    incoming.turnsOnField = 0;
+    incoming._justSwitched = true;
+    incoming.flinched = false;
     renderBattlers();
-    setDialogue(`The opponent sent out ${getActivePokemon(state.enemyTeam, state.enemyActive).name}!`);
+    setDialogue(`The opponent sent out ${incoming.name}!`);
     await wait(900);
+    
+    return "enemyFainted";
+    
   }
-  return false;
 }
 function endBattle(playerWon) {
   state.battleOver = true;
+  state.inputLocked = true;
+  setPanelsEnabled(false);
   setDialogue(playerWon ? "You won the battle!" : "You lost the battle...");
   [el.actionPanel, el.fightPanel, el.pokemonPanel, el.itemPanel].forEach((p) => p.classList.remove("visible"));
   el.dialoguePanel.style.width = "100%";
@@ -1239,17 +1714,40 @@ function endBattle(playerWon) {
     document.getElementById("selectionScreen").classList.add("active");
     document.getElementById("mainOST").pause();
     document.getElementById("mainOST").currentTime=0;
+    setPanelsEnabled(true);
     restartButton.remove();
   });
   el.dialoguePanel.appendChild(restartButton);
 }
 function finishTurn() {
+  if (state.battleOver) return;
   renderBattlers();
+  advanceFieldTurnCounter(getActivePokemon(state.playerTeam, state.playerActive));
+  advanceFieldTurnCounter(getActivePokemon(state.enemyTeam, state.enemyActive));
   state.inputLocked = false;
   setPanelsEnabled(true);
   backToActionPanel();
 }
+
+// A Pokemon's "turns on field" count is used for effects like Fake Out that
+// only work the turn a Pokemon is first sent out.
+function advanceFieldTurnCounter(pokemon) {
+  if (!pokemon || pokemon.fainted) return;
+  if (pokemon._justSwitched) {
+    pokemon._justSwitched = false;
+  } else {
+    pokemon.turnsOnField++;
+  }
+}
+
 async function executeMove(attacker, defender, move, attackerSlot, defenderSlot, isPlayerAttacker) {
+  if (attacker.flinched) {
+    attacker.flinched = false;
+    setDialogue(`${attacker.name} flinched and couldn't move!`);
+    await wait(900);
+    return;
+  }
+
   setDialogue(`${attacker.name} used ${move.name}!`);
   await wait(500);
   await playAnimation(attackerSlot, "anim-attacker");
@@ -1257,12 +1755,27 @@ async function executeMove(attacker, defender, move, attackerSlot, defenderSlot,
   const result = calculateDamage(attacker, defender, move);
 
   if (result.isStatus) {
-    setDialogue(`${attacker.name} used ${move.name}, but nothing happened.`);
+    const outcome = applyMoveEffect(attacker, defender, move);
+    if (outcome && outcome.kind === "statChange" && outcome.changed) {
+      const who = outcome.target === attacker ? attacker.name : defender.name;
+      const dir = outcome.stages > 0 ? "rose" : "fell";
+      setDialogue(`${who}'s ${statLabel(outcome.stat)} ${dir}!`);
+    } else if (outcome && outcome.kind === "statChange" && !outcome.changed) {
+      const who = outcome.target === attacker ? attacker.name : defender.name;
+      setDialogue(`${who}'s ${statLabel(outcome.stat)} won't go any higher!`);
+    } else {
+      setDialogue(`${attacker.name} used ${move.name}, but nothing happened.`);
+    }
     await wait(900);
     return;
   }
   if (result.missed) {
     setDialogue(`${attacker.name}'s attack missed!`);
+    await wait(900);
+    return;
+  }
+  if (result.effectiveness === 0) {
+    setDialogue(`It doesn't affect ${defender.name}...`);
     await wait(900);
     return;
   }
@@ -1275,31 +1788,74 @@ async function executeMove(attacker, defender, move, attackerSlot, defenderSlot,
     setDialogue("A critical hit!");
     await wait(700);
   }
+  if (result.effectiveness > 1) {
+    setDialogue("It's super effective!");
+    await wait(700);
+  } else if (result.effectiveness < 1) {
+    setDialogue("It's not very effective...");
+    await wait(700);
+  }
+
+  // Recoil: the attacker takes a fraction of the damage it just dealt.
+  if (move.effect && move.effect.kind === "recoil") {
+    const recoilDamage = Math.max(1, Math.floor(result.damage * move.effect.fraction));
+    applyDamage(attacker, recoilDamage);
+    renderBattlers();
+    setDialogue(`${attacker.name} is hit with recoil!`);
+    await wait(700);
+  }
+
+  // Secondary flinch (e.g. Fake Out) only applies if the hit connected and,
+  // for Fake Out specifically, only on the target's first turn on the field.
+  if (move.effect && move.effect.kind === "flinch" && !defender.fainted) {
+    const allowFlinch = !move.effect.firstTurnOnly || defender.turnsOnField === 0;
+    if (allowFlinch) {
+      applyMoveEffect(attacker, defender, move);
+    }
+  }
+
+  // Secondary stat change on a damaging move (e.g. Meteor Mash's attack boost chance).
+  if (move.effect && move.effect.kind === "statChange" && !attacker.fainted) {
+    const outcome = applyMoveEffect(attacker, defender, move);
+    if (outcome && outcome.changed) {
+      const who = outcome.target === attacker ? attacker.name : defender.name;
+      const dir = outcome.stages > 0 ? "rose" : "fell";
+      setDialogue(`${who}'s ${statLabel(outcome.stat)} ${dir}!`);
+      await wait(700);
+    }
+  }
 }
 
 
 function calculateDamage(attacker, defender, move) {
   if (move.power === 0) {
-    return { damage: 0, isCritical: false, missed: false, isStatus: true };
+    return { damage: 0, isCritical: false, missed: false, isStatus: true, effectiveness: 1 };
   }
 
   const missed = Math.random() * 100 > move.accuracy;
   if (missed) {
-    return { damage: 0, isCritical: false, missed: true, isStatus: false };
+    return { damage: 0, isCritical: false, missed: true, isStatus: false, effectiveness: 1 };
+  }
+
+  const typeEffectiveness = getTypeEffectiveness(move.type, defender.types);
+  if (typeEffectiveness === 0) {
+    return { damage: 0, isCritical: false, missed: false, isStatus: false, effectiveness: 0 };
   }
 
   const isCritical = Math.random() < CRIT_CHANCE;
-  const attackStat = move.category === "Physical" ? attacker.stats.attack : attacker.stats.spAttack;
-  const defenseStat = move.category === "Physical" ? defender.stats.defense : defender.stats.spDefense;
+  const attackStat = move.category === "Physical" ? getEffectiveStat(attacker, "attack") : getEffectiveStat(attacker, "spAttack");
+  const defenseStat = move.category === "Physical" ? getEffectiveStat(defender, "defense") : getEffectiveStat(defender, "spDefense");
   const level = 50;
   const randomFactor = MIN_RANDOM_FACTOR + Math.random() * (1 - MIN_RANDOM_FACTOR);
   const critMultiplier = isCritical ? 1.5 : 1;
+  // Same Type Attack Bonus: 1.5x if the move's type matches one of the attacker's types.
+  const stab = attacker.types.includes(move.type) ? 1.5 : 1;
 
   const rawDamage =
     (((2 * level) / 5 + 2) * move.power * (attackStat / defenseStat)) / 50 + 2;
-  const damage = Math.max(1, Math.floor(rawDamage * critMultiplier * randomFactor));
+  const damage = Math.max(1, Math.floor(rawDamage * critMultiplier * randomFactor * stab * typeEffectiveness));
 
-  return { damage, isCritical, missed: false, isStatus: false };
+  return { damage, isCritical, missed: false, isStatus: false, effectiveness: typeEffectiveness };
 }
 
 
